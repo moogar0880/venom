@@ -28,6 +28,12 @@ type ConfigLevel int
 // are nested under a ConfigLevel which determines their priority
 type configMap map[string]interface{}
 
+func (c configMap) merge(d configMap) {
+	for key, val := range d {
+		c[key] = val
+	}
+}
+
 // ConfigMap is a mapping of config levels to the maps which contain various
 // configuration values at those levels
 type ConfigMap map[ConfigLevel]configMap
@@ -98,6 +104,17 @@ func (v *Venom) setIfNotExists(l ConfigLevel, key string, value interface{}) {
 		heap.Push(v.usedLevels, l)
 	}
 	setNested(v.config[l], strings.Split(key, Delim), value)
+}
+
+// mergeIfNotExists merges the provided config map into the ConfigLevel l,
+// allocating space for ConfigLevel l if the level hasn't already been
+// allocated
+func (v *Venom) mergeIfNotExists(l ConfigLevel, data configMap) {
+	if _, ok := v.config[l]; !ok {
+		v.config[l] = make(configMap)
+		heap.Push(v.usedLevels, l)
+	}
+	v.config[l].merge(data)
 }
 
 // setNested inserts the provided value into the nested keyspace as defined by

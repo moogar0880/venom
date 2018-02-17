@@ -1,3 +1,7 @@
 .PHONY: test
 test:
-	go test -v 
+	go test -coverprofile=coverage.out
+
+.PHONY: vendor
+vendor:
+	dep ensure

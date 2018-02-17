@@ -97,3 +97,38 @@ func TestGlobalVenom(t *testing.T) {
 		})
 	}
 }
+
+func TestGlobalDebug(t *testing.T) {
+	testIO := []struct {
+		tc      string
+		configs configMap
+		expect  string
+	}{
+		{
+			tc: "should debug",
+			configs: configMap{
+				"foo": "bar",
+				"baz": map[string]interface{}{
+					"bar": "foo",
+				},
+			},
+			expect: `{
+  "2": {
+    "baz": {
+      "bar": "foo"
+    },
+    "foo": "bar"
+  }
+}`,
+		},
+	}
+
+	for _, test := range testIO {
+		t.Run(test.tc, func(t *testing.T) {
+			v.config[EnvironmentLevel] = test.configs
+
+			actual := Debug()
+			assert.Equal(t, test.expect, actual, actual)
+		})
+	}
+}
