@@ -29,6 +29,25 @@ func Find(key string) (interface{}, bool) {
 	return v.Find(key)
 }
 
+// LoadEnvironment reads all registered environment keys into the ConfigMap at
+// the EnvironmentLevel
+func LoadEnvironment() {
+	v.LoadEnvironment()
+}
+
+// LoadFile loads the file from the provided path into Venoms configs. If the
+// file can't be opened, if no loader for the files extension exists, or if
+// loading the file fails, an error is returned
+func LoadFile(name string) error {
+	return v.LoadFile(name)
+}
+
+// LoadDirectory loads any config files found in the provided directory,
+// optionally recursing into any sub-directories
+func LoadDirectory(dir string, recurse bool) error {
+	return v.LoadDirectory(dir, recurse)
+}
+
 // Clear removes all data from the ConfigMap and resets the heap of config
 // levels
 func Clear() {

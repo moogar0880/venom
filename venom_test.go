@@ -95,3 +95,40 @@ func TestVenom(t *testing.T) {
 		})
 	}
 }
+
+func TestDebug(t *testing.T) {
+	testIO := []struct {
+		tc      string
+		venom   *Venom
+		configs configMap
+		expect  string
+	}{
+		{
+			tc:    "should debug",
+			venom: New(),
+			configs: configMap{
+				"foo": "bar",
+				"baz": map[string]interface{}{
+					"bar": "foo",
+				},
+			},
+			expect: `{
+  "2": {
+    "baz": {
+      "bar": "foo"
+    },
+    "foo": "bar"
+  }
+}`,
+		},
+	}
+
+	for _, test := range testIO {
+		t.Run(test.tc, func(t *testing.T) {
+			test.venom.config[EnvironmentLevel] = test.configs
+
+			actual := test.venom.Debug()
+			assert.Equal(t, test.expect, actual, actual)
+		})
+	}
+}
