@@ -68,6 +68,7 @@ func TestGlobalVenom(t *testing.T) {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			// reset the global venom instance for each test run
 			v = New()
+			LoadEnvironment()
 
 			for _, inp := range test.inp {
 				switch inp.l {
@@ -98,6 +99,24 @@ func TestGlobalVenom(t *testing.T) {
 	}
 }
 
+func TestGlobalLoadFile(t *testing.T) {
+	v = New()
+	err := LoadFile("testdata/config.json")
+	assertEqualErrors(t, nil, err)
+
+	assert.Equal(t, v.Get("foo"), "bar")
+	assert.Equal(t, v.Get("level"), 5.0)
+}
+
+func TestGlobalLoadDirectory(t *testing.T) {
+	v = New()
+	err := LoadDirectory("testdata/sub", false)
+	assertEqualErrors(t, nil, err)
+
+	assert.Equal(t, v.Get("foo"), "bar")
+	assert.Equal(t, v.Get("level"), 5.0)
+}
+
 func TestGlobalDebug(t *testing.T) {
 	testIO := []struct {
 		tc      string
@@ -125,6 +144,7 @@ func TestGlobalDebug(t *testing.T) {
 
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
+			v = New()
 			v.config[EnvironmentLevel] = test.configs
 
 			actual := Debug()
