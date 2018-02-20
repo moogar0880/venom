@@ -12,7 +12,7 @@ const (
 	FileLevel
 	EnvironmentLevel
 	FlagLevel
-	OverrideLevel
+	OverrideLevel ConfigLevel = 99
 )
 
 const defaultDelim = "."
@@ -73,6 +73,14 @@ func New() *Venom {
 		envKeys:    make([]string, 0, 0),
 		resolvers:  make(map[ConfigLevel]Resolver),
 	}
+}
+
+// Default returns a new venom instance with some default resolver
+// configuration applied to it
+func Default() *Venom {
+	ven := New()
+	ven.RegisterResolver(EnvironmentLevel, defaultEnvResolver)
+	return ven
 }
 
 // RegisterResolver registers a custom config resolver for the specified

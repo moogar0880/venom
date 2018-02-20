@@ -5,33 +5,36 @@ import (
 	"strings"
 )
 
-// EnvReplacer is the strings.Replacer used to map venom keys to their
-// corresponding environment variables
-var EnvReplacer = strings.NewReplacer(Delim, "_")
+var defaultEnvResolver Resolver
 
-func findKeyInEnvironment(key string) (interface{}, bool) {
-	return os.LookupEnv(EnvReplacer.Replace(key))
+func init() {
+	envR := &EnvironmentVariableResolver{}
+	defaultEnvResolver = envR.Resolve
 }
 
-// RegisterEnv registers the key to be extracted from the environment when
-// LoadEnvironment is run
-func (v *Venom) RegisterEnv(key string) {
-	v.envKeys = append(v.envKeys, key)
-}
-
-// LoadEnvironment reads all registered environment keys into the ConfigMap at
-// the EnvironmentLevel
-func (v *Venom) LoadEnvironment() {
-	// iterate over registered keys and insert into map at EnvironmentLevel
-	for _, key := range v.envKeys {
-		if value, ok := findKeyInEnvironment(key); ok {
-			v.setIfNotExists(EnvironmentLevel, key, value)
-		}
+func toUpperStringSlice(sSlice []string) []string {
+	for i, s := range sSlice {
+		sSlice[i] = strings.ToUpper(s)
 	}
+	return sSlice
 }
 
-// EnvVarResolver is the custom resolver for resolving config values from
-// environment variables
-func EnvVarResolver(keys []string, _ ConfigMap) (val interface{}, ok bool) {
-	return os.LookupEnv(strings.Join(keys, "_"))
+// An EnvironmentVariableResolver is a resolver specifically capable of adding
+// additional context in the form of a prefix to any loaded environment
+// variables
+type EnvironmentVariableResolver struct {
+	Prefix string
+}
+
+// Resolve is a Resolver implementation which attempts to load the requested
+// configuration from an environment variable
+func (r *EnvironmentVariableResolver) Resolve(keys []string, _ ConfigMap) (val interface{}, ok bool) {
+	// copy the keys so we don't negatively impact subsequent lookups
+	keysCopy := make([]string, len(keys))
+	copy(keysCopy, keys)
+
+	if len(r.Prefix) > 0 {
+		keysCopy = append([]string{r.Prefix}, keysCopy...)
+	}
+	return os.LookupEnv(strings.Join(toUpperStringSlice(keysCopy), "_"))
 }
