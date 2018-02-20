@@ -67,8 +67,7 @@ func TestGlobalVenom(t *testing.T) {
 	for i, test := range testIO {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			// reset the global venom instance for each test run
-			v = New()
-			LoadEnvironment()
+			v = Default()
 
 			for _, inp := range test.inp {
 				switch inp.l {

@@ -3,7 +3,7 @@ package venom
 var v *Venom
 
 func init() {
-	v = New()
+	v = Default()
 }
 
 // SetDefault sets the provided key and value into the global venom instance at
@@ -27,12 +27,6 @@ func Get(key string) interface{} {
 // boolean indicating whether or not the key was found
 func Find(key string) (interface{}, bool) {
 	return v.Find(key)
-}
-
-// LoadEnvironment reads all registered environment keys into the ConfigMap at
-// the EnvironmentLevel
-func LoadEnvironment() {
-	v.LoadEnvironment()
 }
 
 // LoadFile loads the file from the provided path into Venoms configs. If the
