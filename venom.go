@@ -54,9 +54,6 @@ type Venom struct {
 	// config map
 	usedLevels *ConfigLevelHeap
 
-	// envKeys is the list of registered keys to pull from the environment
-	envKeys []string
-
 	// resolvers is the definitive list of any customer ConfigLevel resolvers
 	// provided to this Venom instance
 	resolvers map[ConfigLevel]Resolver
@@ -70,7 +67,6 @@ func New() *Venom {
 	return &Venom{
 		config:     make(ConfigLevelMap),
 		usedLevels: NewConfigLevelHeap(),
-		envKeys:    make([]string, 0, 0),
 		resolvers:  make(map[ConfigLevel]Resolver),
 	}
 }
