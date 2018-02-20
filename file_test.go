@@ -51,12 +51,12 @@ func TestLoadFile(t *testing.T) {
 		tc       string
 		filename string
 		err      error
-		expect   configMap
+		expect   ConfigMap
 	}{
 		{
 			tc:       "should load JSON file",
 			filename: "testdata/config.json",
-			expect: configMap{
+			expect: ConfigMap{
 				"foo":   "bar",
 				"level": 5.0,
 			},
@@ -102,13 +102,13 @@ func TestLoadDirectory(t *testing.T) {
 		dir     string
 		recurse bool
 		err     error
-		expect  configMap
+		expect  ConfigMap
 	}{
 		{
 			tc:      "should load single directory",
 			dir:     "testdata",
 			recurse: false,
-			expect: configMap{
+			expect: ConfigMap{
 				"foo":   "bar",
 				"level": 5.0,
 			},
@@ -117,7 +117,7 @@ func TestLoadDirectory(t *testing.T) {
 			tc:      "should recursively load directories",
 			dir:     "testdata/sub",
 			recurse: true,
-			expect: configMap{
+			expect: ConfigMap{
 				"foo":   "baz",
 				"level": 5.0,
 				"and":   "another",

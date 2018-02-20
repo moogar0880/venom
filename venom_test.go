@@ -39,7 +39,7 @@ func TestVenom(t *testing.T) {
 			},
 			expected: []kv{
 				kv{"foo.bar", "baz"},
-				kv{"foo", configMap{"bar": "baz"}},
+				kv{"foo", ConfigMap{"bar": "baz"}},
 			},
 		},
 		// more complex test case using multiple config levels and nested key space
@@ -50,7 +50,7 @@ func TestVenom(t *testing.T) {
 			},
 			expected: []kv{
 				kv{"foo.bar", 12},
-				kv{"foo", configMap{"bar": 12}},
+				kv{"foo", ConfigMap{"bar": 12}},
 			},
 		},
 		// simple case of an absent key
@@ -100,13 +100,13 @@ func TestDebug(t *testing.T) {
 	testIO := []struct {
 		tc      string
 		venom   *Venom
-		configs configMap
+		configs ConfigMap
 		expect  string
 	}{
 		{
 			tc:    "should debug",
 			venom: New(),
-			configs: configMap{
+			configs: ConfigMap{
 				"foo": "bar",
 				"baz": map[string]interface{}{
 					"bar": "foo",

@@ -29,3 +29,9 @@ func (v *Venom) LoadEnvironment() {
 		}
 	}
 }
+
+// EnvVarResolver is the custom resolver for resolving config values from
+// environment variables
+func EnvVarResolver(keys []string, _ ConfigMap) (val interface{}, ok bool) {
+	return os.LookupEnv(strings.Join(keys, "_"))
+}

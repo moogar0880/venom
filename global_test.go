@@ -39,7 +39,7 @@ func TestGlobalVenom(t *testing.T) {
 			},
 			expected: []kv{
 				kv{"foo.bar", "baz"},
-				kv{"foo", configMap{"bar": "baz"}},
+				kv{"foo", ConfigMap{"bar": "baz"}},
 			},
 		},
 		// more complex test case using multiple config levels and nested key space
@@ -50,7 +50,7 @@ func TestGlobalVenom(t *testing.T) {
 			},
 			expected: []kv{
 				kv{"foo.bar", 12},
-				kv{"foo", configMap{"bar": 12}},
+				kv{"foo", ConfigMap{"bar": 12}},
 			},
 		},
 		// simple case of an absent key
@@ -120,12 +120,12 @@ func TestGlobalLoadDirectory(t *testing.T) {
 func TestGlobalDebug(t *testing.T) {
 	testIO := []struct {
 		tc      string
-		configs configMap
+		configs ConfigMap
 		expect  string
 	}{
 		{
 			tc: "should debug",
-			configs: configMap{
+			configs: ConfigMap{
 				"foo": "bar",
 				"baz": map[string]interface{}{
 					"bar": "foo",
