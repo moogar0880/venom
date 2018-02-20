@@ -24,26 +24,31 @@ var Delim = defaultDelim
 // ConfigLevel is a type alias used to identify various configuration levels
 type ConfigLevel int
 
-// configMap defines the inner map type which holds actual config data. These
-// are nested under a ConfigLevel which determines their priority
-type configMap map[string]interface{}
+// Resolve resolves
+func (c ConfigLevel) Resolve(key string, d ConfigMap) (val interface{}, ok bool) {
+	return
+}
 
-func (c configMap) merge(d configMap) {
+// ConfigMap defines the inner map type which holds actual config data. These
+// are nested under a ConfigLevel which determines their priority
+type ConfigMap map[string]interface{}
+
+func (c ConfigMap) merge(d ConfigMap) {
 	for key, val := range d {
 		c[key] = val
 	}
 }
 
-// ConfigMap is a mapping of config levels to the maps which contain various
-// configuration values at those levels
-type ConfigMap map[ConfigLevel]configMap
+// ConfigLevelMap is a mapping of config levels to the maps which contain
+// various configuration values at those levels
+type ConfigLevelMap map[ConfigLevel]ConfigMap
 
 // Venom is the configuration registry responsible for storing and managing
 // arbitrary configuration keys and values.
 type Venom struct {
 	// config is the global config space. Values are stored at a specified
 	// ConfigLevel for prioritized retrieval
-	config ConfigMap
+	config ConfigLevelMap
 
 	// usedLevels is a sorted slice of all ConfigLevels currently stored in the
 	// config map
@@ -51,6 +56,10 @@ type Venom struct {
 
 	// envKeys is the list of registered keys to pull from the environment
 	envKeys []string
+
+	// resolvers is the definitive list of any customer ConfigLevel resolvers
+	// provided to this Venom instance
+	resolvers map[ConfigLevel]Resolver
 }
 
 // New returns a newly initialized Venom instance.
@@ -59,14 +68,25 @@ type Venom struct {
 // config level once a value is set to that level.
 func New() *Venom {
 	return &Venom{
-		config:     make(ConfigMap),
+		config:     make(ConfigLevelMap),
 		usedLevels: NewConfigLevelHeap(),
 		envKeys:    make([]string, 0, 0),
+		resolvers:  make(map[ConfigLevel]Resolver),
 	}
 }
 
+// RegisterResolver registers a custom config resolver for the specified
+// ConfigLevel.
+//
+// Additionally, if the provided level is not already in the current collection
+// of active config levels, it will be added automatically
+func (v *Venom) RegisterResolver(level ConfigLevel, r Resolver) {
+	v.resolvers[level] = r
+	heap.Push(v.usedLevels, level)
+}
+
 // SetLevel is a generic key/value setter method. It sets the provided k/v at
-// the specified level inside the map, conditionally creating a new configMap if
+// the specified level inside the map, conditionally creating a new ConfigMap if
 // one didn't previously exist.
 func (v *Venom) SetLevel(level ConfigLevel, key string, value interface{}) {
 	v.setIfNotExists(level, key, value)
@@ -97,10 +117,10 @@ func (v *Venom) Find(key string) (interface{}, bool) {
 }
 
 // setIfNotExists inserts the key and value into the config map, allocating the
-// configMap for that level if one was not already allocated.
+// ConfigMap for that level if one was not already allocated.
 func (v *Venom) setIfNotExists(l ConfigLevel, key string, value interface{}) {
 	if _, ok := v.config[l]; !ok {
-		v.config[l] = make(configMap)
+		v.config[l] = make(ConfigMap)
 		heap.Push(v.usedLevels, l)
 	}
 	setNested(v.config[l], strings.Split(key, Delim), value)
@@ -109,9 +129,9 @@ func (v *Venom) setIfNotExists(l ConfigLevel, key string, value interface{}) {
 // mergeIfNotExists merges the provided config map into the ConfigLevel l,
 // allocating space for ConfigLevel l if the level hasn't already been
 // allocated
-func (v *Venom) mergeIfNotExists(l ConfigLevel, data configMap) {
+func (v *Venom) mergeIfNotExists(l ConfigLevel, data ConfigMap) {
 	if _, ok := v.config[l]; !ok {
-		v.config[l] = make(configMap)
+		v.config[l] = make(ConfigMap)
 		heap.Push(v.usedLevels, l)
 	}
 	v.config[l].merge(data)
@@ -119,16 +139,16 @@ func (v *Venom) mergeIfNotExists(l ConfigLevel, data configMap) {
 
 // setNested inserts the provided value into the nested keyspace as defined by
 // the delim separated keys
-func setNested(config configMap, keys []string, value interface{}) {
+func setNested(config ConfigMap, keys []string, value interface{}) {
 	for _, k := range keys {
 		// if we're at the end of our slice of keys, set the value and return
 		if len(keys) == 1 {
 			config[k] = value
 			return
 		}
-		// otherwise, create a new configMap at the current node and continue
-		config[k] = make(configMap)
-		setNested(config[k].(configMap), keys[1:], value)
+		// otherwise, create a new ConfigMap at the current node and continue
+		config[k] = make(ConfigMap)
+		setNested(config[k].(ConfigMap), keys[1:], value)
 	}
 	return
 }
@@ -137,41 +157,26 @@ func setNested(config configMap, keys []string, value interface{}) {
 // that matches or nil
 func (v *Venom) find(keys []string) (val interface{}, ok bool) {
 	for _, level := range *v.usedLevels {
-		if val, ok = findNested(v.config[level], keys); ok {
+		resolver, resolverExists := v.resolvers[level]
+		if !resolverExists {
+			resolver = DefaultResolver
+		}
+
+		if val, ok = resolver(keys, v.config[level]); ok {
 			return
 		}
 	}
 	return nil, false
 }
 
-// findNested recursively searches a configMap for the provided slice of keys,
-// where each key in the slice of keys represents each key from delim separated
-// string
-func findNested(config configMap, keys []string) (val interface{}, ok bool) {
-	for _, key := range keys {
-		if val, ok = config[key]; ok {
-			// if we're at the last key in the slice return the current value
-			if len(keys) == 1 {
-				return
-			}
-
-			switch actualValue := val.(type) {
-			case configMap:
-				return findNested(actualValue, keys[1:])
-			}
-		}
-	}
-	return nil, false
-}
-
-// Clear removes all data from the ConfigMap and resets the heap of config
+// Clear removes all data from the ConfigLevelMap and resets the heap of config
 // levels
 func (v *Venom) Clear() {
-	v.config = make(ConfigMap)
+	v.config = make(ConfigLevelMap)
 	v.usedLevels = NewConfigLevelHeap()
 }
 
-// Debug returns the current venom ConfigMap as a pretty-printed JSON string
+// Debug returns the current venom ConfigLevelMap as a pretty-printed JSON string
 func (v *Venom) Debug() string {
 	b, _ := json.MarshalIndent(v.config, "", "  ")
 	return string(b)
