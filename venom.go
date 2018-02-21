@@ -24,11 +24,6 @@ var Delim = defaultDelim
 // ConfigLevel is a type alias used to identify various configuration levels
 type ConfigLevel int
 
-// Resolve resolves
-func (c ConfigLevel) Resolve(key string, d ConfigMap) (val interface{}, ok bool) {
-	return
-}
-
 // ConfigMap defines the inner map type which holds actual config data. These
 // are nested under a ConfigLevel which determines their priority
 type ConfigMap map[string]interface{}
@@ -57,6 +52,9 @@ type Venom struct {
 	// resolvers is the definitive list of any customer ConfigLevel resolvers
 	// provided to this Venom instance
 	resolvers map[ConfigLevel]Resolver
+
+	// aliases contains the collection of any aliased config values
+	aliases map[string]string
 }
 
 // New returns a newly initialized Venom instance.
@@ -68,6 +66,7 @@ func New() *Venom {
 		config:     make(ConfigLevelMap),
 		usedLevels: NewConfigLevelHeap(),
 		resolvers:  make(map[ConfigLevel]Resolver),
+		aliases:    make(map[string]string),
 	}
 }
 
@@ -87,6 +86,13 @@ func Default() *Venom {
 func (v *Venom) RegisterResolver(level ConfigLevel, r Resolver) {
 	v.resolvers[level] = r
 	heap.Push(v.usedLevels, level)
+}
+
+// Alias registers an alias for a given key. This allows consumers to access
+// the same config via a different key, increasing the backwards
+// compatibility of an application.
+func (v *Venom) Alias(from, to string) {
+	v.aliases[from] = to
 }
 
 // SetLevel is a generic key/value setter method. It sets the provided k/v at
@@ -110,14 +116,14 @@ func (v *Venom) SetOverride(key string, value interface{}) {
 
 // Get performs a fetch on a given key from the inner config collection.
 func (v *Venom) Get(key string) interface{} {
-	val, _ := v.find(strings.Split(key, Delim))
+	val, _ := v.find(key)
 	return val
 }
 
 // Find searches for the given key, returning the discovered value and a
 // boolean indicating whether or not the key was found
 func (v *Venom) Find(key string) (interface{}, bool) {
-	return v.find(strings.Split(key, Delim))
+	return v.find(key)
 }
 
 // setIfNotExists inserts the key and value into the config map, allocating the
@@ -164,7 +170,13 @@ func setNested(config ConfigMap, keys []string, value interface{}) {
 
 // find iterates over each ConfigLevel, in order, and returns the first value
 // that matches or nil
-func (v *Venom) find(keys []string) (val interface{}, ok bool) {
+func (v *Venom) find(key string) (val interface{}, ok bool) {
+	// check for aliases before begining search
+	if actual, isAliased := v.aliases[key]; isAliased {
+		key = actual
+	}
+
+	keys := strings.Split(key, Delim)
 	for _, level := range *v.usedLevels {
 		resolver, resolverExists := v.resolvers[level]
 		if !resolverExists {

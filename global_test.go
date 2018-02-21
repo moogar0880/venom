@@ -151,3 +151,39 @@ func TestGlobalDebug(t *testing.T) {
 		})
 	}
 }
+
+func TestGlobalAlias(t *testing.T) {
+	testIO := []struct {
+		tc    string
+		key   string
+		alias string
+		value interface{}
+	}{
+		{
+			tc:    "should resolve aliased field",
+			key:   "foo",
+			alias: "bar",
+			value: 867.5309,
+		},
+	}
+
+	for _, test := range testIO {
+		t.Run(test.tc, func(t *testing.T) {
+			defer v.Clear()
+			SetDefault(test.key, test.value)
+			Alias(test.alias, test.key)
+
+			unAliased := Get(test.key)
+			assert.Equal(t, test.value, unAliased)
+
+			aliased := Get(test.alias)
+			assert.Equal(t, test.value, aliased)
+		})
+	}
+}
+
+func TestGlobalRegisterResolver(t *testing.T) {
+	rsolv := &EnvironmentVariableResolver{}
+	v.RegisterResolver(EnvironmentLevel, rsolv.Resolve)
+	assert.Contains(t, v.resolvers, EnvironmentLevel)
+}

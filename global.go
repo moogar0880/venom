@@ -6,6 +6,17 @@ func init() {
 	v = Default()
 }
 
+// RegisterResolver registers a custom config resolver into the global venom
+// instance
+func RegisterResolver(level ConfigLevel, r Resolver) {
+	v.RegisterResolver(level, r)
+}
+
+// Alias registers an alias for a given key in the global venom instance
+func Alias(from, to string) {
+	v.Alias(from, to)
+}
+
 // SetDefault sets the provided key and value into the global venom instance at
 // the default level
 func SetDefault(key string, value interface{}) {
