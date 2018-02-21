@@ -207,7 +207,6 @@ field do not match.
 of the parent config. See the following example for more on this
 
 ```go
-
 type LoggingConfig struct {
     // this field will be loaded from log.level if Unmarshalled via the 
     // following Config struct

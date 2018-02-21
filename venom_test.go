@@ -132,3 +132,96 @@ func TestDebug(t *testing.T) {
 		})
 	}
 }
+
+func TestVenomEdgeCases(t *testing.T) {
+	testIO := []struct {
+		tc     string
+		v      *Venom
+		setup  func(*Venom)
+		key    string
+		expect interface{}
+	}{
+		{
+			tc: "should load ConfigMap if retrieving first key of nested keys",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo.bar", "baz")
+			},
+			key:    "foo",
+			expect: ConfigMap{"bar": "baz"},
+		},
+		{
+			tc: "should load map if retrieving first key of nested keys",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo", map[string]interface{}{"bar": "baz"})
+			},
+			key:    "foo",
+			expect: map[string]interface{}{"bar": "baz"},
+		},
+		{
+			tc: "should load ConfigMap when retrieving arbitrarily nested keys",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo.bar", "baz")
+				v.SetDefault("foo.baz", "bar")
+			},
+			key: "foo",
+			expect: ConfigMap{
+				"bar": "baz",
+				"baz": "bar",
+			},
+		},
+		{
+			tc: "should load ConfigMap when retrieving value with nested sub-keys",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo.bar", "baz")
+				v.SetDefault("foo.baz.bat", "bar")
+			},
+			key: "foo",
+			expect: ConfigMap{
+				"bar": "baz",
+				"baz": ConfigMap{
+					"bat": "bar",
+				},
+			},
+		},
+		{
+			tc: "should return nil when joining string key/value during lookup",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo", "bar.baz")
+			},
+			key:    "foo.bar",
+			expect: nil,
+		},
+		{
+			tc: "should return nil when joining string/ConfigMap key/value during lookup",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo", ConfigMap{"bar.baz": "bat"})
+			},
+			key:    "foo.bar",
+			expect: nil,
+		},
+		{
+			tc: "should return nil when joining string/map key/value during lookup",
+			v:  New(),
+			setup: func(v *Venom) {
+				v.SetDefault("foo", map[string]interface{}{"bar.baz": "bat"})
+			},
+			key:    "foo.bar",
+			expect: nil,
+		},
+	}
+
+	for _, test := range testIO {
+		t.Run(test.tc, func(t *testing.T) {
+			test.setup(test.v)
+
+			actual := test.v.Get(test.key)
+			assert.Equal(t, test.expect, actual)
+		})
+	}
+}
