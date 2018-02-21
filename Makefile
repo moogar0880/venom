@@ -7,6 +7,10 @@ gogen:
 test:
 	go test -coverprofile=coverage.out
 
+.PHONY: test/benchmark
+test/benchmark:
+	go test -run=XXX -bench=. -benchmem
+
 .PHONY: test/coverage
 test/coverage: test
 	go tool cover -html=coverage.out
