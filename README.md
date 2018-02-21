@@ -243,3 +243,19 @@ ven := venom.New()
 
 ven.SetDefault("verbose", false)
 ```
+
+## Benchmarks
+
+```
+goos: darwin
+goarch: amd64
+pkg: github.com/moogar0880/venom
+BenchmarkVenomGet/single_ConfigLevel_with_one_key/value_pair-8         	20000000	        93.5 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomGet/many_key/value_pairs_in_a_single_ConfigLevel-8       	20000000	       117 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomGet/many_key/value_pairs_spread_across_multiple_ConfigLevels-8         	20000000	       114 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomWrite/single_key/value_pair_in_one_ConfigLevel-8                       	20000000	       103 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomWrite/many_key/value_pairs_in_one_ConfigLevel-8                        	 2000000	       630 ns/op	     121 B/op	       3 allocs/op
+BenchmarkVenomWrite/many_nested_key/value_pairs_in_one_ConfigLevel-8                 	 1000000	      1896 ns/op	     922 B/op	       7 allocs/op
+BenchmarkVenomWrite/many_key/value_pairs_in_many_ConfigLevels-8                      	 2000000	       660 ns/op	     121 B/op	       3 allocs/op
+BenchmarkVenomWrite/many_nested_key/value_pairs_in_many_ConfigLevels-8               	 1000000	      1714 ns/op	     922 B/op	       7 allocs/op
+```
