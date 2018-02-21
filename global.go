@@ -17,6 +17,12 @@ func Alias(from, to string) {
 	v.Alias(from, to)
 }
 
+// SetLevel is a generic key/value setter method. It sets the provided k/v at
+// the specified level inside the global venom instance.
+func SetLevel(level ConfigLevel, key string, value interface{}) {
+	v.SetLevel(level, key, value)
+}
+
 // SetDefault sets the provided key and value into the global venom instance at
 // the default level
 func SetDefault(key string, value interface{}) {

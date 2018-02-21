@@ -131,7 +131,7 @@ FlagSet, you can pass a zero-value `FlagsetResolver` when registering the
 resolver with Venom.
 
 ```go
-flag.Bool("verbose", false, "enable verbose logging")
+fs.String("log-level", "WARNING", "set log level")
 
 flagResolver := &venom.FlagsetResolver{}
 
@@ -149,7 +149,7 @@ to `os.Args[1:]` if none are specified.
 
 ```go
 fs := flag.NewFlagSet("example", flag.ContinueOnError)
-fs.Bool("verbose", false, "enable verbose logging")
+fs.String("log-level", "WARNING", "set log level")
 
 flagResolver := &venom.FlagsetResolver{
     Flags: fs,
