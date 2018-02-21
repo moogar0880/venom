@@ -150,9 +150,14 @@ func setNested(config ConfigMap, keys []string, value interface{}) {
 			config[k] = value
 			return
 		}
-		// otherwise, create a new ConfigMap at the current node and continue
-		config[k] = make(ConfigMap)
+
+		// make sure we won't overwrite existing keys, before creating a new
+		// ConfigMap at the current node and continuing
+		if _, ok := config[k]; !ok {
+			config[k] = make(ConfigMap)
+		}
 		setNested(config[k].(ConfigMap), keys[1:], value)
+		return
 	}
 	return
 }
