@@ -170,7 +170,7 @@ func TestGlobalAlias(t *testing.T) {
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
 			defer v.Clear()
-			SetDefault(test.key, test.value)
+			SetLevel(DefaultLevel, test.key, test.value)
 			Alias(test.alias, test.key)
 
 			unAliased := Get(test.key)
