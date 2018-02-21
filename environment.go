@@ -5,12 +5,7 @@ import (
 	"strings"
 )
 
-var defaultEnvResolver Resolver
-
-func init() {
-	envR := &EnvironmentVariableResolver{}
-	defaultEnvResolver = envR.Resolve
-}
+var defaultEnvResolver = &EnvironmentVariableResolver{}
 
 func toUpperStringSlice(sSlice []string) []string {
 	for i, s := range sSlice {

@@ -107,7 +107,7 @@ envVarResolver := &venom.EnvironmentVariableResolver{
     Prefix: "MYSERVICE",
 }
 
-venom.RegisterResolver(venom.EnvironmentLevel, envVarResolver.Resolve)
+venom.RegisterResolver(venom.EnvironmentLevel, envVarResolver)
 
 os.Setenv("MYSERVICE_LOG_LEVEL", "INFO")
 
@@ -135,7 +135,7 @@ flag.Bool("verbose", false, "enable verbose logging")
 
 flagResolver := &venom.FlagsetResolver{}
 
-venom.RegisterResolver(venom.FlagLevel, flagResolver.Resolve)
+venom.RegisterResolver(venom.FlagLevel, flagResolver)
 ```
 
 #### Provide a Custom `flag.FlagSet`
@@ -154,7 +154,7 @@ fs.Bool("verbose", false, "enable verbose logging")
 flagResolver := &venom.FlagsetResolver{
     Flags: fs,
 }
-venom.RegisterResolver(venom.FlagLevel, flagResolver.Resolve)
+venom.RegisterResolver(venom.FlagLevel, flagResolver)
 ```
 
 ### Custom Setting Behavior
@@ -192,6 +192,18 @@ more complex config structures when setting and reading variables.
 venom.SetDefault("log.level", "INFO")
 fmt.Printf("%v", venom.Get("log"))  // Output: map[string]interface{"level": "INFO"}
 fmt.Printf("%v", venom.Get("log.level"))  // Output: "INFO"
+```
+
+## Aliasing Keys
+
+Venom exposes the ability to alias one key to another. This allows applications
+to more easily modify their configuration without breaking backwards 
+compatibility when doing so.
+
+```go
+venom.SetDefault("log.enabled", true)
+venom.Alias("verbose", "log.enabled")
+fmt.Println(venom.Get("verbose"))  // Output: true
 ```
 
 ## Unmarshal Configs

@@ -183,7 +183,6 @@ func TestGlobalAlias(t *testing.T) {
 }
 
 func TestGlobalRegisterResolver(t *testing.T) {
-	rsolv := &EnvironmentVariableResolver{}
-	v.RegisterResolver(EnvironmentLevel, rsolv.Resolve)
+	v.RegisterResolver(EnvironmentLevel, defaultEnvResolver)
 	assert.Contains(t, v.resolvers, EnvironmentLevel)
 }
