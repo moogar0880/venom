@@ -32,10 +32,9 @@ func TestEnvironment(t *testing.T) {
 			envVar: "MY_SERVICE_TIMEOUT",
 			value:  "10",
 			resolver: func() Resolver {
-				r := &EnvironmentVariableResolver{
+				return &EnvironmentVariableResolver{
 					Prefix: "MY_SERVICE",
 				}
-				return r.Resolve
 			}(),
 			expect: "10",
 			ok:     true,
@@ -46,10 +45,9 @@ func TestEnvironment(t *testing.T) {
 			envVar: "TIMEOUT",
 			value:  "10",
 			resolver: func() Resolver {
-				r := &EnvironmentVariableResolver{
+				return &EnvironmentVariableResolver{
 					Prefix: "MY_SERVICE",
 				}
-				return r.Resolve
 			}(),
 			expect: nil,
 			ok:     false,

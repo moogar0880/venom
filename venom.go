@@ -180,10 +180,10 @@ func (v *Venom) find(key string) (val interface{}, ok bool) {
 	for _, level := range *v.usedLevels {
 		resolver, resolverExists := v.resolvers[level]
 		if !resolverExists {
-			resolver = DefaultResolver
+			resolver = defaultResolver
 		}
 
-		if val, ok = resolver(keys, v.config[level]); ok {
+		if val, ok = resolver.Resolve(keys, v.config[level]); ok {
 			return
 		}
 	}
