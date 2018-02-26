@@ -3,6 +3,19 @@
 A pluggable hierarchical configuration management library with zero
 dependencies, for golang.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/moogar0880/venom)](https://goreportcard.com/report/github.com/moogar0880/venom)
+[![GoDoc](https://godoc.org/github.com/moogar0880/venom?status.svg)](https://godoc.org/github.com/moogar0880/venom)
+
+## Install
+
+With dep:
+
+`dep ensure -add github.com/moogar0880/venom`
+
+Or with go get:
+
+`go get github.com/moogar0880/venom`
+
 ## Why Venom?
 
 This library aims to provide the basic building blocks of a configuration
@@ -19,7 +32,7 @@ reasonably support, such as:
 These mechanisms are exposed in a completely extendible way which will allow 
 you to easily perform the following actions:
 
-1. Specify your own config level precendence (eg, environment variables can be
+1. Specify your own config level precedence (eg, environment variables can be
    made to override command line arguments).
 1. Default behavior can be replaced with custom behavior by writing a custom
    `Resolver`.
@@ -30,7 +43,7 @@ you to easily perform the following actions:
 ### Setting Defaults
 
 You can easily set default values for configuration options that are not 
-required to be specified by config levels with a higher precendence.
+required to be specified by config levels with a higher precedence.
 
 ```go
 // simple values can easily be set as defaults
@@ -51,7 +64,7 @@ venom.SetDefault("log", map[string]interface{
 
 Venom allows you to specify custom file loaders for specific file types. By
 default the only implementation is the `JSONLoader` which loads any file with
-an extention of `.json` using `json.Unmarshal`.
+an extension of `.json` using `json.Unmarshal`.
 
 If you wish to implement your own type of config file reader you need only to
 implement the `IOFileLoader` interface:
