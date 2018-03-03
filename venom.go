@@ -30,7 +30,17 @@ type ConfigMap map[string]interface{}
 
 func (c ConfigMap) merge(d ConfigMap) {
 	for key, val := range d {
-		c[key] = val
+		switch actual := val.(type) {
+		case map[string]interface{}:
+			// if it smells like a ConfigMap, then treat it like one
+			c[key] = func() ConfigMap {
+				m := make(ConfigMap)
+				m.merge(ConfigMap(actual))
+				return m
+			}()
+		default:
+			c[key] = val
+		}
 	}
 }
 
