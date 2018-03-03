@@ -401,10 +401,54 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil string slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("strings", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Strings: nil,
+			},
+		},
+		{
+			tc: "should unmarshal string interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("strings", []interface{}{"foo", "bar"})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Strings: []string{"foo", "bar"},
+			},
+		},
+		{
 			tc: "should unmarshal bool slice",
 			v: func() *Venom {
 				ven := New()
 				ven.SetDefault("bools", []bool{true, true, false})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Bools: []bool{true, true, false},
+			},
+		},
+		{
+			tc: "should unmarshal nil bool slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("bools", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Bools: nil,
+			},
+		},
+		{
+			tc: "should unmarshal bool interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("bools", []interface{}{true, true, false})
 				return ven
 			}(),
 			expect: &sliceConfig{
@@ -423,10 +467,54 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil int slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("ints", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Ints: nil,
+			},
+		},
+		{
+			tc: "should unmarshal int interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("ints", []interface{}{0, 1})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Ints: []int{0, 1},
+			},
+		},
+		{
 			tc: "should unmarshal int8 slice",
 			v: func() *Venom {
 				ven := New()
 				ven.SetDefault("int8s", []int8{2, 3})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int8s: []int8{2, 3},
+			},
+		},
+		{
+			tc: "should unmarshal nil int8 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int8s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int8s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal int8 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int8s", []interface{}{int8(2), int8(3)})
 				return ven
 			}(),
 			expect: &sliceConfig{
@@ -445,6 +533,28 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil int16 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int16s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int16s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal int16 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int16s", []interface{}{int16(2), int16(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int16s: []int16{2, 3},
+			},
+		},
+		{
 			tc: "should unmarshal int32 slice",
 			v: func() *Venom {
 				ven := New()
@@ -453,6 +563,28 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: &sliceConfig{
 				Int32s: []int32{6, 7},
+			},
+		},
+		{
+			tc: "should unmarshal nil int32 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int32s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int32s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal int32 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int32s", []interface{}{int32(2), int32(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int32s: []int32{2, 3},
 			},
 		},
 		{
@@ -467,6 +599,28 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil int64 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int64s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int64s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal int64 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int64s", []interface{}{int64(2), int64(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Int64s: []int64{2, 3},
+			},
+		},
+		{
 			tc: "should unmarshal uint slice",
 			v: func() *Venom {
 				ven := New()
@@ -478,10 +632,54 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil uint slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uints", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uints: nil,
+			},
+		},
+		{
+			tc: "should unmarshal uint interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uints", []interface{}{uint(2), uint(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uints: []uint{2, 3},
+			},
+		},
+		{
 			tc: "should unmarshal uint8 slice",
 			v: func() *Venom {
 				ven := New()
 				ven.SetDefault("uint8s", []uint8{2, 3})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint8s: []uint8{2, 3},
+			},
+		},
+		{
+			tc: "should unmarshal nil uint8 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint8s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint8s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal uint8 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint8s", []interface{}{uint8(2), uint8(3)})
 				return ven
 			}(),
 			expect: &sliceConfig{
@@ -500,6 +698,28 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil uint16 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint16s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint16s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal uint16 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint16s", []interface{}{uint16(2), uint16(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint16s: []uint16{2, 3},
+			},
+		},
+		{
 			tc: "should unmarshal uint32 slice",
 			v: func() *Venom {
 				ven := New()
@@ -508,6 +728,28 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: &sliceConfig{
 				Uint32s: []uint32{6, 7},
+			},
+		},
+		{
+			tc: "should unmarshal nil uint32 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint32s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint32s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal uint32 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint32s", []interface{}{uint32(2), uint32(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint32s: []uint32{2, 3},
 			},
 		},
 		{
@@ -522,6 +764,28 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil uint64 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint64s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint64s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal uint64 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint64s", []interface{}{uint64(2), uint64(3)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Uint64s: []uint64{2, 3},
+			},
+		},
+		{
 			tc: "should unmarshal float32 slice",
 			v: func() *Venom {
 				ven := New()
@@ -533,10 +797,54 @@ func TestUnmarshalSlice(t *testing.T) {
 			},
 		},
 		{
+			tc: "should unmarshal nil float32 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("float32s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Float32s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal float32 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("float32s", []interface{}{float32(0.0), float32(8675.309)})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Float32s: []float32{0.0, 8675.309},
+			},
+		},
+		{
 			tc: "should unmarshal float64 slice",
 			v: func() *Venom {
 				ven := New()
 				ven.SetDefault("float64s", []float64{0.0, 8675.309})
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Float64s: []float64{0.0, 8675.309},
+			},
+		},
+		{
+			tc: "should unmarshal nil float64 slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("float64s", nil)
+				return ven
+			}(),
+			expect: &sliceConfig{
+				Float64s: nil,
+			},
+		},
+		{
+			tc: "should unmarshal float64 interface{} slice",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("float64s", []interface{}{float64(0.0), float64(8675.309)})
 				return ven
 			}(),
 			expect: &sliceConfig{
@@ -606,6 +914,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]string"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of strings",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("strings", []interface{}{"foo", true})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{"foo", true},
+				To:   "[]string",
+				Err: &CoerceErr{
+					From: true,
+					To:   "string",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of bools",
 			v: func() *Venom {
 				ven := New()
@@ -614,6 +939,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]bool"},
+		},
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of bools",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("bools", []interface{}{true, "false"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{true, "false"},
+				To:   "[]bool",
+				Err: &CoerceErr{
+					From: "false",
+					To:   "bool",
+				},
+			},
 		},
 		{
 			tc: "should error coercing string to slice of ints",
@@ -626,6 +968,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]int"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of ints",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("ints", []interface{}{0, "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{0, "foobar"},
+				To:   "[]int",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "int",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of int8s",
 			v: func() *Venom {
 				ven := New()
@@ -634,6 +993,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]int8"},
+		},
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of int8s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int8s", []interface{}{int8(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{int8(0), "foobar"},
+				To:   "[]int8",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "int8",
+				},
+			},
 		},
 		{
 			tc: "should error coercing string to slice of int16s",
@@ -646,6 +1022,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]int16"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of int16s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int16s", []interface{}{int16(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{int16(0), "foobar"},
+				To:   "[]int16",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "int16",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of int32s",
 			v: func() *Venom {
 				ven := New()
@@ -654,6 +1047,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]int32"},
+		},
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of int32s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int32s", []interface{}{int32(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{int32(0), "foobar"},
+				To:   "[]int32",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "int32",
+				},
+			},
 		},
 		{
 			tc: "should error coercing string to slice of int64s",
@@ -666,6 +1076,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]int64"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of int64s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("int64s", []interface{}{int64(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{int64(0), "foobar"},
+				To:   "[]int64",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "int64",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of uints",
 			v: func() *Venom {
 				ven := New()
@@ -674,6 +1101,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]uint"},
+		},
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of uints",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uints", []interface{}{uint(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{uint(0), "foobar"},
+				To:   "[]uint",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "uint",
+				},
+			},
 		},
 		{
 			tc: "should error coercing string to slice of uint8s",
@@ -686,6 +1130,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]uint8"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of uint8s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint8s", []interface{}{uint8(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{uint8(0), "foobar"},
+				To:   "[]uint8",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "uint8",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of uint16s",
 			v: func() *Venom {
 				ven := New()
@@ -694,6 +1155,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]uint16"},
+		},
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of uint16s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint16s", []interface{}{uint16(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{uint16(0), "foobar"},
+				To:   "[]uint16",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "uint16",
+				},
+			},
 		},
 		{
 			tc: "should error coercing string to slice of uint32s",
@@ -706,6 +1184,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]uint32"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of uint32s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint32s", []interface{}{uint32(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{uint32(0), "foobar"},
+				To:   "[]uint32",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "uint32",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of uint64s",
 			v: func() *Venom {
 				ven := New()
@@ -715,7 +1210,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]uint64"},
 		},
-
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of uint64s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("uint64s", []interface{}{uint64(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{uint64(0), "foobar"},
+				To:   "[]uint64",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "uint64",
+				},
+			},
+		},
 		{
 			tc: "should error coercing string to slice of float32s",
 			v: func() *Venom {
@@ -727,6 +1238,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			err:    &CoerceErr{From: "foobar", To: "[]float32"},
 		},
 		{
+			tc: "should error coercing interface{} slice with invalid values to slice of float32s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("float32s", []interface{}{float32(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{float32(0), "foobar"},
+				To:   "[]float32",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "float32",
+				},
+			},
+		},
+		{
 			tc: "should error coercing string to slice of float64s",
 			v: func() *Venom {
 				ven := New()
@@ -735,6 +1263,23 @@ func TestUnmarshalSlice(t *testing.T) {
 			}(),
 			expect: new(sliceConfig),
 			err:    &CoerceErr{From: "foobar", To: "[]float64"},
+		},
+		{
+			tc: "should error coercing interface{} slice with invalid values to slice of float64s",
+			v: func() *Venom {
+				ven := New()
+				ven.SetDefault("float64s", []interface{}{float64(0), "foobar"})
+				return ven
+			}(),
+			expect: new(sliceConfig),
+			err: &CoerceErr{
+				From: []interface{}{float64(0), "foobar"},
+				To:   "[]float64",
+				Err: &CoerceErr{
+					From: "foobar",
+					To:   "float64",
+				},
+			},
 		},
 		{
 			tc: "should error coercing non-matching slices",

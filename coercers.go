@@ -7,6 +7,7 @@ import "fmt"
 type CoerceErr struct {
 	From interface{}
 	To   string
+	Err  error
 }
 
 func (e *CoerceErr) Error() string {
@@ -15,224 +16,406 @@ func (e *CoerceErr) Error() string {
 
 func coerceString(val interface{}) (string, error) {
 	if value, ok := val.(string); !ok {
-		return "", &CoerceErr{val, "string"}
+		return "", &CoerceErr{From: val, To: "string"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceStringSlice(val interface{}) ([]string, error) {
-	if value, ok := val.([]string); !ok {
-		return nil, &CoerceErr{val, "[]string"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []string:
+		return val.([]string), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []string
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceString(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]string", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]string"}
 	}
 }
 
 func coerceBool(val interface{}) (bool, error) {
 	if value, ok := val.(bool); !ok {
-		return false, &CoerceErr{val, "bool"}
+		return false, &CoerceErr{From: val, To: "bool"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceBoolSlice(val interface{}) ([]bool, error) {
-	if value, ok := val.([]bool); !ok {
-		return nil, &CoerceErr{val, "[]bool"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []bool:
+		return val.([]bool), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []bool
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceBool(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]bool", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]bool"}
 	}
 }
 
 func coerceInt(val interface{}) (int, error) {
 	if value, ok := val.(int); !ok {
-		return 0, &CoerceErr{val, "int"}
+		return 0, &CoerceErr{From: val, To: "int"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceIntSlice(val interface{}) ([]int, error) {
-	if value, ok := val.([]int); !ok {
-		return nil, &CoerceErr{val, "[]int"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []int:
+		return val.([]int), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []int
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceInt(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]int", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]int"}
 	}
 }
 
 func coerceInt8(val interface{}) (int8, error) {
 	if value, ok := val.(int8); !ok {
-		return 0, &CoerceErr{val, "int8"}
+		return 0, &CoerceErr{From: val, To: "int8"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceInt8Slice(val interface{}) ([]int8, error) {
-	if value, ok := val.([]int8); !ok {
-		return nil, &CoerceErr{val, "[]int8"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []int8:
+		return val.([]int8), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []int8
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceInt8(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]int8", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]int8"}
 	}
 }
 
 func coerceInt16(val interface{}) (int16, error) {
 	if value, ok := val.(int16); !ok {
-		return 0, &CoerceErr{val, "int16"}
+		return 0, &CoerceErr{From: val, To: "int16"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceInt16Slice(val interface{}) ([]int16, error) {
-	if value, ok := val.([]int16); !ok {
-		return nil, &CoerceErr{val, "[]int16"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []int16:
+		return val.([]int16), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []int16
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceInt16(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]int16", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]int16"}
 	}
 }
 
 func coerceInt32(val interface{}) (int32, error) {
 	if value, ok := val.(int32); !ok {
-		return 0, &CoerceErr{val, "int32"}
+		return 0, &CoerceErr{From: val, To: "int32"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceInt32Slice(val interface{}) ([]int32, error) {
-	if value, ok := val.([]int32); !ok {
-		return nil, &CoerceErr{val, "[]int32"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []int32:
+		return val.([]int32), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []int32
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceInt32(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]int32", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]int32"}
 	}
 }
 
 func coerceInt64(val interface{}) (int64, error) {
 	if value, ok := val.(int64); !ok {
-		return 0, &CoerceErr{val, "int64"}
+		return 0, &CoerceErr{From: val, To: "int64"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceInt64Slice(val interface{}) ([]int64, error) {
-	if value, ok := val.([]int64); !ok {
-		return nil, &CoerceErr{val, "[]int64"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []int64:
+		return val.([]int64), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []int64
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceInt64(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]int64", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]int64"}
 	}
 }
 
 func coerceUint(val interface{}) (uint, error) {
 	if value, ok := val.(uint); !ok {
-		return 0, &CoerceErr{val, "uint"}
+		return 0, &CoerceErr{From: val, To: "uint"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceUintSlice(val interface{}) ([]uint, error) {
-	if value, ok := val.([]uint); !ok {
-		return nil, &CoerceErr{val, "[]uint"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []uint:
+		return val.([]uint), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []uint
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceUint(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]uint", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]uint"}
 	}
 }
 
 func coerceUint8(val interface{}) (uint8, error) {
 	if value, ok := val.(uint8); !ok {
-		return 0, &CoerceErr{val, "uint8"}
+		return 0, &CoerceErr{From: val, To: "uint8"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceUint8Slice(val interface{}) ([]uint8, error) {
-	if value, ok := val.([]uint8); !ok {
-		return nil, &CoerceErr{val, "[]uint8"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []uint8:
+		return val.([]uint8), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []uint8
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceUint8(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]uint8", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]uint8"}
 	}
 }
 
 func coerceUint16(val interface{}) (uint16, error) {
 	if value, ok := val.(uint16); !ok {
-		return 0, &CoerceErr{val, "uint16"}
+		return 0, &CoerceErr{From: val, To: "uint16"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceUint16Slice(val interface{}) ([]uint16, error) {
-	if value, ok := val.([]uint16); !ok {
-		return nil, &CoerceErr{val, "[]uint16"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []uint16:
+		return val.([]uint16), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []uint16
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceUint16(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]uint16", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]uint16"}
 	}
 }
 
 func coerceUint32(val interface{}) (uint32, error) {
 	if value, ok := val.(uint32); !ok {
-		return 0, &CoerceErr{val, "uint32"}
+		return 0, &CoerceErr{From: val, To: "uint32"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceUint32Slice(val interface{}) ([]uint32, error) {
-	if value, ok := val.([]uint32); !ok {
-		return nil, &CoerceErr{val, "[]uint32"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []uint32:
+		return val.([]uint32), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []uint32
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceUint32(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]uint32", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]uint32"}
 	}
 }
 
 func coerceUint64(val interface{}) (uint64, error) {
 	if value, ok := val.(uint64); !ok {
-		return 0, &CoerceErr{val, "uint64"}
+		return 0, &CoerceErr{From: val, To: "uint64"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceUint64Slice(val interface{}) ([]uint64, error) {
-	if value, ok := val.([]uint64); !ok {
-		return nil, &CoerceErr{val, "[]uint64"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []uint64:
+		return val.([]uint64), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []uint64
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceUint64(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]uint64", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]uint64"}
 	}
 }
 
 func coerceFloat32(val interface{}) (float32, error) {
 	if value, ok := val.(float32); !ok {
-		return 0, &CoerceErr{val, "float32"}
+		return 0, &CoerceErr{From: val, To: "float32"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceFloat32Slice(val interface{}) ([]float32, error) {
-	if value, ok := val.([]float32); !ok {
-		return nil, &CoerceErr{val, "[]float32"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []float32:
+		return val.([]float32), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []float32
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceFloat32(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]float32", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]float32"}
 	}
 }
 
 func coerceFloat64(val interface{}) (float64, error) {
 	if value, ok := val.(float64); !ok {
-		return 0, &CoerceErr{val, "float64"}
+		return 0, &CoerceErr{From: val, To: "float64"}
 	} else {
 		return value, nil
 	}
 }
 
 func coerceFloat64Slice(val interface{}) ([]float64, error) {
-	if value, ok := val.([]float64); !ok {
-		return nil, &CoerceErr{val, "[]float64"}
-	} else {
-		return value, nil
+	switch val.(type) {
+	case []float64:
+		return val.([]float64), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []float64
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerceFloat64(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]float64", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]float64"}
 	}
 }

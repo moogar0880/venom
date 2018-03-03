@@ -26,6 +26,7 @@ const coerceErr = `
 type CoerceErr struct{
 	From interface{}
 	To string
+	Err error
 }
 
 func (e *CoerceErr) Error() string {
@@ -85,7 +86,7 @@ func writeCaster(to reflect.Kind) string {
 		zeroValFmt = "%q"
 	}
 	return fmt.Sprintf(`if value, ok := val.(%s); !ok {
-		return `+zeroValFmt+`, &CoerceErr{val, %q}
+		return `+zeroValFmt+`, &CoerceErr{From: val, To: %q}
 	} else {
 		return value, nil
 	}
@@ -93,12 +94,25 @@ func writeCaster(to reflect.Kind) string {
 }
 
 func writeSliceCaster(to reflect.Kind) string {
-	return fmt.Sprintf(`if value, ok := val.([]%s); !ok {
-		return nil, &CoerceErr{val, "[]%s"}
-	} else {
-		return value, nil
+	return fmt.Sprintf(`switch val.(type) {
+	case []%s:
+		return val.([]%s), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []%s
+		for _, item := range val.([]interface{}) {
+			coerced, err := coerce%s(item)
+			if err != nil {
+				return nil, &CoerceErr{val, "[]%s", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]%s"}
 	}
-`, to, to)
+`, to, to, to, kindTitle(to), to, to)
 }
 
 func writeCoercers(buff *bytes.Buffer) error {
