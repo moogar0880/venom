@@ -345,6 +345,21 @@ func (d *decoder) coerceSlice(val interface{}, to reflect.Kind, field reflect.Va
 			return err
 		}
 		field.Set(reflect.ValueOf(actual))
+	case reflect.Struct:
+		unAddressableSlice := reflect.MakeSlice(field.Type(), field.Len(), field.Cap())
+		actual := reflect.New(unAddressableSlice.Type())
+
+		sliceVal := reflect.ValueOf(val)
+		for i := 0; i < sliceVal.Len(); i++ {
+			item := reflect.New(sliceType)
+			if item.CanAddr() {
+				if err = d.value(item.Addr()); err != nil {
+					return err
+				}
+			}
+			reflectAppend(actual, item)
+		}
+		field.Set(reflect.Indirect(actual))
 	case reflect.Slice:
 		// we've hit a multidimensional slice so we need to recursively build
 		// up the inner slices
@@ -363,4 +378,9 @@ func (d *decoder) coerceSlice(val interface{}, to reflect.Kind, field reflect.Va
 		}
 	}
 	return err
+}
+
+func reflectAppend(slice reflect.Value, item reflect.Value) {
+	sliceVal := reflect.ValueOf(slice.Interface())
+	sliceVal.Elem().Set(reflect.Append(sliceVal.Elem(), reflect.Indirect(item)))
 }
