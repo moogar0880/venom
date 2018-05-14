@@ -115,6 +115,40 @@ func writeSliceCaster(to reflect.Kind) string {
 `, to, to, to, kindTitle(to), to, to)
 }
 
+func writeIntSliceCaster() string {
+	return `func coerceIntSlice(val interface{}) ([]int, error) {
+	switch val.(type) {
+	case []int:
+		return val.([]int), nil
+	case nil:
+		return nil, nil
+	case []interface{}:
+		var container []int
+		for _, item := range val.([]interface{}) {
+			var coerced int
+			var err error
+			switch item.(type) {
+			// this special case is required due to how encoding/json treats
+			// numbers
+			case float64:
+				var coercedFloat float64
+				coercedFloat, err = coerceFloat64(item)
+				coerced = int(coercedFloat)
+			default:
+				coerced, err = coerceInt(item)
+			}
+			if err != nil {
+				return nil, &CoerceErr{val, "[]int", err}
+			}
+			container = append(container, coerced)
+		}
+		return container, nil
+	default:
+		return nil, &CoerceErr{From: val, To: "[]int"}
+	}
+}`
+}
+
 func writeCoercers(buff *bytes.Buffer) error {
 	buff.WriteString(packageIntro)
 
@@ -122,8 +156,13 @@ func writeCoercers(buff *bytes.Buffer) error {
 		fmt.Fprintf(buff, "func coerce%s(val interface{}) (%s, error) {\n\t", kindTitle(typ), typ.String())
 		fmt.Fprintf(buff, writeCaster(typ)+"}\n\n")
 
-		fmt.Fprintf(buff, "func coerce%sSlice(val interface{}) ([]%s, error) {\n\t", kindTitle(typ), typ.String())
-		fmt.Fprintf(buff, writeSliceCaster(typ)+"}\n\n")
+
+		if typ == reflect.Int {
+			fmt.Fprintf(buff, writeIntSliceCaster()+"\n\n")
+		} else {
+			fmt.Fprintf(buff, "func coerce%sSlice(val interface{}) ([]%s, error) {\n\t", kindTitle(typ), typ.String())
+			fmt.Fprintf(buff, writeSliceCaster(typ)+"}\n\n")
+		}
 	}
 
 	// gofmt
