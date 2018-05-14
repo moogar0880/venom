@@ -1,13 +1,13 @@
 package venom
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 type configStruct struct {
@@ -33,7 +33,7 @@ type configStruct struct {
 	Float32 float32 `venom:"float32"`
 	Float64 float64 `venom:"float64"`
 
-	Opts    map[string]string `venom:"opts"`
+	Opts map[string]string `venom:"opts"`
 }
 
 type nestedConfig struct {
@@ -1312,7 +1312,7 @@ func TestUnmarshalSlice(t *testing.T) {
 type Config struct {
 	Ports   []int
 	Storage StorageConfig
-	Dir  string           `venom:"dir"`
+	Dir     string `venom:"dir"`
 }
 
 type StorageConfig struct {
