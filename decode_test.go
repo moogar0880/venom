@@ -1,6 +1,9 @@
 package venom
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -29,6 +32,8 @@ type configStruct struct {
 	// floats
 	Float32 float32 `venom:"float32"`
 	Float64 float64 `venom:"float64"`
+
+	Opts map[string]string `venom:"opts"`
 }
 
 type nestedConfig struct {
@@ -856,17 +861,17 @@ func TestUnmarshalSlice(t *testing.T) {
 			v: func() *Venom {
 				ven := New()
 				ven.SetDefault("int2d", [][]int{
-					[]int{0, 1, 2, 3, 4, 5},
-					[]int{6, 7, 8, 9, 10, 11},
-					[]int{12, 13, 14, 15, 16, 17},
+					{0, 1, 2, 3, 4, 5},
+					{6, 7, 8, 9, 10, 11},
+					{12, 13, 14, 15, 16, 17},
 				})
 				return ven
 			}(),
 			expect: &sliceConfig{
 				Int2D: [][]int{
-					[]int{0, 1, 2, 3, 4, 5},
-					[]int{6, 7, 8, 9, 10, 11},
-					[]int{12, 13, 14, 15, 16, 17},
+					{0, 1, 2, 3, 4, 5},
+					{6, 7, 8, 9, 10, 11},
+					{12, 13, 14, 15, 16, 17},
 				},
 			},
 		},
@@ -875,30 +880,30 @@ func TestUnmarshalSlice(t *testing.T) {
 			v: func() *Venom {
 				ven := New()
 				ven.SetDefault("int3d", [][][]int{
-					[][]int{
-						[]int{0, 1, 2, 3, 4, 5},
-						[]int{6, 7, 8, 9, 10, 11},
-						[]int{12, 13, 14, 15, 16, 17},
+					{
+						{0, 1, 2, 3, 4, 5},
+						{6, 7, 8, 9, 10, 11},
+						{12, 13, 14, 15, 16, 17},
 					},
-					[][]int{
-						[]int{18, 19, 20, 21, 22, 23},
-						[]int{24, 25, 26, 27, 28, 29},
-						[]int{30, 31, 32, 33, 34, 35},
+					{
+						{18, 19, 20, 21, 22, 23},
+						{24, 25, 26, 27, 28, 29},
+						{30, 31, 32, 33, 34, 35},
 					},
 				})
 				return ven
 			}(),
 			expect: &sliceConfig{
 				Int3D: [][][]int{
-					[][]int{
-						[]int{0, 1, 2, 3, 4, 5},
-						[]int{6, 7, 8, 9, 10, 11},
-						[]int{12, 13, 14, 15, 16, 17},
+					{
+						{0, 1, 2, 3, 4, 5},
+						{6, 7, 8, 9, 10, 11},
+						{12, 13, 14, 15, 16, 17},
 					},
-					[][]int{
-						[]int{18, 19, 20, 21, 22, 23},
-						[]int{24, 25, 26, 27, 28, 29},
-						[]int{30, 31, 32, 33, 34, 35},
+					{
+						{18, 19, 20, 21, 22, 23},
+						{24, 25, 26, 27, 28, 29},
+						{30, 31, 32, 33, 34, 35},
 					},
 				},
 			},
@@ -1302,4 +1307,51 @@ func TestUnmarshalSlice(t *testing.T) {
 			assert.Equal(t, test.expect, conf)
 		})
 	}
+}
+
+type Config struct {
+	Ports   []int
+	Storage StorageConfig
+	Dir     string `venom:"dir"`
+}
+
+type StorageConfig struct {
+	Driver     string
+	DriverOpts map[string]string `venom:"driver_opts"`
+}
+
+func TestUnmarshal_Hyper(t *testing.T) {
+	inp := Config{
+		Ports: []int{8443},
+		Storage: StorageConfig{
+			DriverOpts: make(map[string]string),
+		},
+	}
+
+	dir, err := ioutil.TempDir("", "tmp_test_data")
+	assert.Nil(t, err)
+	defer os.RemoveAll(dir)
+
+	content := `{
+    "dir": "/some/path",
+    "ports": [443],
+    "storage": {
+        "driver": "bolt",
+        "driver_opts": {
+            "path": "/some/path"
+        }
+    }
+}`
+
+	tmpfile := filepath.Join(dir, "test.json")
+	err = ioutil.WriteFile(filepath.Join(dir, "test.json"), []byte(content), 0644)
+	assert.Nil(t, err)
+
+	v := New()
+	assert.Nil(t, v.LoadFile(tmpfile))
+	err = Unmarshal(v, &inp)
+	assert.Nil(t, err)
+
+	assert.Equal(t, []int{443}, inp.Ports)
+	assert.Equal(t, "/some/path", inp.Dir)
 }

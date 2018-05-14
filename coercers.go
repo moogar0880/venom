@@ -89,7 +89,18 @@ func coerceIntSlice(val interface{}) ([]int, error) {
 	case []interface{}:
 		var container []int
 		for _, item := range val.([]interface{}) {
-			coerced, err := coerceInt(item)
+			var coerced int
+			var err error
+			switch item.(type) {
+			// this special case is required due to how encoding/json treats
+			// numbers
+			case float64:
+				var coercedFloat float64
+				coercedFloat, err = coerceFloat64(item)
+				coerced = int(coercedFloat)
+			default:
+				coerced, err = coerceInt(item)
+			}
 			if err != nil {
 				return nil, &CoerceErr{val, "[]int", err}
 			}
