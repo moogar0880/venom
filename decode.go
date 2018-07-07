@@ -113,6 +113,14 @@ func (d *decoder) value(val reflect.Value) error {
 			if err = d.coerce(config, typField.Type.Kind(), elemField); err != nil {
 				return err
 			}
+		} else if !ok && elemField.Kind() == reflect.Struct {
+			if err := d.value(elemField.Addr()); err != nil {
+				return err
+			}
+		} else if !ok && elemField.Kind() == reflect.Ptr {
+			if err := d.value(elemField); err != nil {
+				return err
+			}
 		}
 
 		// reset the namespace before iterating to the next field
