@@ -17,4 +17,4 @@ test/coverage: test
 
 .PHONY: vendor
 vendor:
-	dep ensure
+	go mod vendor
