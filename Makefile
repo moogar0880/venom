@@ -17,4 +17,9 @@ test/coverage: test
 
 .PHONY: vendor
 vendor:
-	go mod vendor
+	@if [[ $$(go version) = *"go1.11"* ]]; then\
+        go mod vendor;\
+	else\
+		dep init;\
+    fi
+	
