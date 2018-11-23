@@ -21,5 +21,5 @@ vendor:
         go mod vendor;\
 	else\
 		dep init;\
-    fi
+	fi
 	
