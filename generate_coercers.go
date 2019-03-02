@@ -156,7 +156,6 @@ func writeCoercers(buff *bytes.Buffer) error {
 		fmt.Fprintf(buff, "func coerce%s(val interface{}) (%s, error) {\n\t", kindTitle(typ), typ.String())
 		fmt.Fprintf(buff, writeCaster(typ)+"}\n\n")
 
-
 		if typ == reflect.Int {
 			fmt.Fprintf(buff, writeIntSliceCaster()+"\n\n")
 		} else {

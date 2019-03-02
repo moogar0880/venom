@@ -3,6 +3,10 @@ gogen:
 	@go run generate_coercers.go
 	@go run generate_getters.go
 
+.PHONY: lint
+lint:
+	gofmt -d -l -s *.go
+
 .PHONY: test
 test:
 	go test -coverprofile=coverage.out
@@ -17,9 +21,4 @@ test/coverage: test
 
 .PHONY: vendor
 vendor:
-	@if [[ $$(go version) = *"go1.11"* ]]; then\
-        go mod vendor;\
-	else\
-		dep init;\
-	fi
-	
+	go mod vendor
