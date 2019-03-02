@@ -15,51 +15,51 @@ func TestGlobalVenom(t *testing.T) {
 		// simple test case with only the default level
 		{
 			inp: []lkv{
-				lkv{DefaultLevel, "foo", "bar"},
+				{DefaultLevel, "foo", "bar"},
 			},
 			expected: []kv{
-				kv{"foo", "bar"},
+				{"foo", "bar"},
 			},
 		},
 		// slightly more complex test case with use of both the default and
 		// override config levels, asserting that the higher priority wins
 		{
 			inp: []lkv{
-				lkv{DefaultLevel, "foo", "bar"},
-				lkv{OverrideLevel, "foo", "baz"},
+				{DefaultLevel, "foo", "bar"},
+				{OverrideLevel, "foo", "baz"},
 			},
 			expected: []kv{
-				kv{"foo", "baz"},
+				{"foo", "baz"},
 			},
 		},
 		// // simple test case using nested keys
 		{
 			inp: []lkv{
-				lkv{DefaultLevel, "foo.bar", "baz"},
+				{DefaultLevel, "foo.bar", "baz"},
 			},
 			expected: []kv{
-				kv{"foo.bar", "baz"},
-				kv{"foo", ConfigMap{"bar": "baz"}},
+				{"foo.bar", "baz"},
+				{"foo", ConfigMap{"bar": "baz"}},
 			},
 		},
 		// more complex test case using multiple config levels and nested key space
 		{
 			inp: []lkv{
-				lkv{DefaultLevel, "foo.bar", "baz"},
-				lkv{OverrideLevel, "foo.bar", 12},
+				{DefaultLevel, "foo.bar", "baz"},
+				{OverrideLevel, "foo.bar", 12},
 			},
 			expected: []kv{
-				kv{"foo.bar", 12},
-				kv{"foo", ConfigMap{"bar": 12}},
+				{"foo.bar", 12},
+				{"foo", ConfigMap{"bar": 12}},
 			},
 		},
 		// simple case of an absent key
 		{
 			inp: []lkv{
-				lkv{DefaultLevel, "foo", "bar"},
+				{DefaultLevel, "foo", "bar"},
 			},
 			expected: []kv{
-				kv{"bar", nil},
+				{"bar", nil},
 			},
 		},
 	}
