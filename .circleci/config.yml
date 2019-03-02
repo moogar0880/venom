@@ -1,0 +1,46 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  # Lint and test against Go 1.9
+  test_1_9:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
+      - run: go get -u github.com/golang/dep/cmd/dep
+      - run: dep init
+      - run: make -e lint test
+
+  # Lint and test against Go 1.10
+  test_1_10:
+    docker:
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
+      - run: go get -u github.com/golang/dep/cmd/dep
+      - run: dep init
+      - run: make -e lint test
+
+  # Lint and test against Go 1.11
+  test_1_11:
+    docker:
+        - image: circleci/golang:1.11
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
+      - run: go get -u github.com/golang/dep/cmd/dep
+      - run: dep init
+      - run: make -e lint test
+
+  # Lint and test against Go 1.12
+  test_1_12:
+    docker:
+        - image: circleci/golang:1.12
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
+      - run: make -e vendor lint test
