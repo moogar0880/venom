@@ -106,15 +106,17 @@ func (d *decoder) value(val reflect.Value) error {
 		d.ns.add(tag)
 
 		// fail early if the specified config doesn't exist
-		if config, ok := d.data.Find(d.ns.String()); ok {
+		config, ok := d.data.Find(d.ns.String())
+		switch {
+		case ok:
 			if err = d.coerce(config, typField.Type.Kind(), elemField); err != nil {
 				return err
 			}
-		} else if !ok && elemField.Kind() == reflect.Struct {
+		case !ok && elemField.Kind() == reflect.Struct:
 			if err := d.value(elemField.Addr()); err != nil {
 				return err
 			}
-		} else if !ok && elemField.Kind() == reflect.Ptr {
+		case !ok && elemField.Kind() == reflect.Ptr:
 			if err := d.value(elemField); err != nil {
 				return err
 			}
