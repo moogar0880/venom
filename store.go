@@ -109,19 +109,19 @@ func (s *DefaultConfigStore) setIfNotExists(l ConfigLevel, key string, value int
 // setNested inserts the provided value into the nested keyspace as defined by
 // the delim separated keys
 func setNested(config ConfigMap, keys []string, value interface{}) {
-	for _, k := range keys {
+	for index, key := range keys {
 		// if we're at the end of our slice of keys, set the value and return
-		if len(keys) == 1 {
-			config[k] = value
+		if index == len(keys)-1 {
+			config[key] = value
 			return
 		}
 
 		// make sure we won't overwrite existing keys, before creating a new
 		// ConfigMap at the current node and continuing
-		if _, ok := config[k]; !ok {
-			config[k] = make(ConfigMap)
+		if _, ok := config[key]; !ok {
+			config[key] = make(ConfigMap)
 		}
-		setNested(config[k].(ConfigMap), keys[1:], value)
+		config = config[key].(ConfigMap)
 	}
 }
 
