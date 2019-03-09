@@ -41,7 +41,7 @@ func ExampleFlagsetResolver_Resolve() {
 }
 
 func ExampleSetLevel() {
-	var MySuperImportantLevel venom.ConfigLevel = venom.OverrideLevel + 1
+	var MySuperImportantLevel = venom.OverrideLevel + 1
 	venom.SetLevel(MySuperImportantLevel, "verbose", true)
 	venom.SetOverride("verbose", false)
 	fmt.Println(venom.Get("verbose"))

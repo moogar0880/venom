@@ -69,14 +69,15 @@ func BenchmarkVenomGet(b *testing.B) {
 				var key string
 				for i := 0; i < 10000; i++ {
 					key = fmt.Sprintf("test_%d", i)
-					if i%int(FileLevel) == 0 {
+					switch {
+					case i%int(FileLevel) == 0:
 						ven.SetLevel(FileLevel, key, i)
-					} else if i%int(EnvironmentLevel) == 0 {
+					case i%int(EnvironmentLevel) == 0:
 						os.Setenv(strings.ToUpper(key), fmt.Sprintf("%d", i))
 						envVarsToUnset = append(envVarsToUnset, strings.ToUpper(key))
-					} else if i%int(OverrideLevel) == 0 {
+					case i%int(OverrideLevel) == 0:
 						ven.SetOverride(key, i)
-					} else {
+					default:
 						ven.SetDefault(key, i)
 					}
 				}
@@ -136,15 +137,17 @@ func BenchmarkVenomWrite(b *testing.B) {
 			tc:  "many key/value pairs in many ConfigLevels",
 			ven: New(),
 			level: func(i int) ConfigLevel {
-				if i%int(FileLevel) == 0 {
+				switch {
+				case i%int(FileLevel) == 0:
 					return FileLevel
-				} else if i%int(EnvironmentLevel) == 0 {
+				case i%int(EnvironmentLevel) == 0:
 					envVarsToUnset = append(envVarsToUnset, strings.ToUpper(fmt.Sprintf("test_%d", i)))
 					return EnvironmentLevel
-				} else if i%int(OverrideLevel) == 0 {
+				case i%int(OverrideLevel) == 0:
 					return OverrideLevel
+				default:
+					return DefaultLevel
 				}
-				return DefaultLevel
 			},
 			key:   func(i int) string { return fmt.Sprintf("test_%d", i) },
 			value: 1000,
@@ -153,15 +156,17 @@ func BenchmarkVenomWrite(b *testing.B) {
 			tc:  "many nested key/value pairs in many ConfigLevels",
 			ven: New(),
 			level: func(i int) ConfigLevel {
-				if i%int(FileLevel) == 0 {
+				switch {
+				case i%int(FileLevel) == 0:
 					return FileLevel
-				} else if i%int(EnvironmentLevel) == 0 {
+				case i%int(EnvironmentLevel) == 0:
 					envVarsToUnset = append(envVarsToUnset, strings.ToUpper(fmt.Sprintf("test_%d", i)))
 					return EnvironmentLevel
-				} else if i%int(OverrideLevel) == 0 {
+				case i%int(OverrideLevel) == 0:
 					return OverrideLevel
+				default:
+					return DefaultLevel
 				}
-				return DefaultLevel
 			},
 			key:   func(i int) string { return fmt.Sprintf("test_%d.test.%d", i, i) },
 			value: 1000,

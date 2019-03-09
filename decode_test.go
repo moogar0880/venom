@@ -307,26 +307,20 @@ func TestInvalidUnmarshalError(t *testing.T) {
 		err  error
 	}{
 		{
-			tc: "should err due to nil config",
-			v: func() *Venom {
-				return New()
-			}(),
+			tc:   "should err due to nil config",
+			v:    New(),
 			conf: nil,
 			err:  &InvalidUnmarshalError{reflect.TypeOf(nil)},
 		},
 		{
-			tc: "should err due to nil config",
-			v: func() *Venom {
-				return New()
-			}(),
+			tc:   "should err due to nil config",
+			v:    New(),
 			conf: configStruct{},
 			err:  &InvalidUnmarshalError{reflect.TypeOf(configStruct{})},
 		},
 		{
 			tc: "should err due to nil config",
-			v: func() *Venom {
-				return New()
-			}(),
+			v:  New(),
 			conf: func() interface{} {
 				var c *configStruct
 				return c

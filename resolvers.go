@@ -22,8 +22,7 @@ func (r *DefaultResolver) Resolve(keys []string, config ConfigMap) (val interfac
 				return
 			}
 
-			switch actualValue := val.(type) {
-			case ConfigMap:
+			if actualValue, ok := val.(ConfigMap); ok {
 				return r.Resolve(keys[1:], actualValue)
 			}
 		}
