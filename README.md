@@ -171,7 +171,7 @@ flagResolver := &venom.FlagsetResolver{
 venom.RegisterResolver(venom.FlagLevel, flagResolver)
 ```
 
-### Custom Setting Behavior
+### Custom ConfigLevels
 
 Consuming applications are able to define their own `ConfigLevel`s in order to
 define configuration values with higher or lower precedence. For example, to
@@ -247,6 +247,22 @@ var c Config
 err := venom.Unmarshal(nil, &c)
 ```
 
+## Safety
+
+As of 0.2.0, venom now exposes optional functions for defining Venom instances 
+that are safe for concurrent goroutine access.
+
+Two functions are exposed to provide new goroutine safe Venom instances, the 
+behavior of which mimics the functions unsafe counterparts:
+
+```go
+// generate a new, empty, venom instance that is safe for concurrent access 
+ven := venom.NewSafe()
+
+// or generate a new venom instance with some default levels applied to it
+ven = venom.DefaultSafe()
+```
+
 ## Custom Venom Behavior
 
 The above examples show how to use the global venom instance for the sake of 
@@ -257,6 +273,17 @@ ven := venom.New()
 
 ven.SetDefault("verbose", false)
 ```
+
+Additionally, as of 0.2.0, you can define your own `ConfigStore` to control how
+venom manages it's underlying configuration storage. This can be achieved by 
+creating a new Venom instance with a predefined `ConfigStore` via the
+`NewWithStore` function. 
+
+```go
+ven := venom.NewWithStore(venom.NewSafeConfigStore())
+
+ven.SetDefault("verbose", false)
+````
 
 ## Benchmarks
 

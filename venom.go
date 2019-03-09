@@ -55,9 +55,7 @@ type Venom struct {
 // The internal config map is created empty, only allocating space for a given
 // config level once a value is set to that level.
 func New() *Venom {
-	return &Venom{
-		Store: NewDefaultConfigStore(),
-	}
+	return NewWithStore(NewDefaultConfigStore())
 }
 
 // NewSafe returns a newly initialized Venom instance that is safe to read and
@@ -66,8 +64,14 @@ func New() *Venom {
 // The internal config map is created empty, only allocating space for a given
 // config level once a value is set to that level.
 func NewSafe() *Venom {
+	return NewWithStore(NewSafeConfigStore())
+}
+
+// NewWithStore returns a newly initialized Venom instance that wraps the
+// provided ConfigStore.
+func NewWithStore(s ConfigStore) *Venom {
 	return &Venom{
-		Store: NewSafeConfigStore(),
+		Store: s,
 	}
 }
 
