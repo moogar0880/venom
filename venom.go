@@ -45,6 +45,8 @@ type ConfigLevelMap map[ConfigLevel]ConfigMap
 // Venom is the configuration registry responsible for storing and managing
 // arbitrary configuration keys and values.
 type Venom struct {
+	// Store is the storage mechanism used by this venom instance to manage
+	// it's underlying configuration storage.
 	Store ConfigStore
 }
 
