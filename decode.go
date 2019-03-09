@@ -7,10 +7,7 @@ import (
 	"strings"
 )
 
-const (
-	omitemptyOpt = "omitempty"
-	tag          = "venom"
-)
+const tag = "venom"
 
 // Unmarshal unmarshals the provided Venom config into the provided interface
 func Unmarshal(data *Venom, dst interface{}) error {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -42,26 +41,13 @@ func (e ErrNoFileLoader) Error() string {
 // io.Reader into a map[string]interface{}
 type IOFileLoader func(io.Reader) (map[string]interface{}, error)
 
-// unmarshaler is a function signature for any function capable of loading a
-// slice of bytes into an arbitrary interface
-type unmarshaler func([]byte, interface{}) error
-
-func unmarshalReader(fn unmarshaler, r io.Reader) (map[string]interface{}, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-
+// JSONLoader is an IOFileLoader which loads JSON config data
+func JSONLoader(r io.Reader) (map[string]interface{}, error) {
 	data := make(map[string]interface{})
-	if err := fn(bytes, &data); err != nil {
+	if err := json.NewDecoder(r).Decode(&data); err != nil {
 		return nil, err
 	}
 	return data, nil
-}
-
-// JSONLoader is an IOFileLoader which loads JSON config data
-func JSONLoader(r io.Reader) (map[string]interface{}, error) {
-	return unmarshalReader(json.Unmarshal, r)
 }
 
 // LoadFile loads the file from the provided path into Venoms configs. If the
@@ -84,7 +70,7 @@ func (v *Venom) LoadFile(name string) error {
 		return err
 	}
 
-	v.mergeIfNotExists(FileLevel, data)
+	v.Merge(FileLevel, data)
 	return nil
 }
 
@@ -108,7 +94,7 @@ func findFiles(dir string, recurse bool) (files sort.StringSlice) {
 		}
 		return nil
 	}
-	filepath.Walk(path, walk)
+	_ = filepath.Walk(path, walk)
 	return
 }
 

@@ -264,12 +264,12 @@ ven.SetDefault("verbose", false)
 goos: darwin
 goarch: amd64
 pkg: github.com/moogar0880/venom
-BenchmarkVenomGet/single_ConfigLevel_with_one_key/value_pair-8         	20000000	        93.5 ns/op	      16 B/op	       1 allocs/op
-BenchmarkVenomGet/many_key/value_pairs_in_a_single_ConfigLevel-8       	20000000	       117 ns/op	      16 B/op	       1 allocs/op
-BenchmarkVenomGet/many_key/value_pairs_spread_across_multiple_ConfigLevels-8         	20000000	       114 ns/op	      16 B/op	       1 allocs/op
-BenchmarkVenomWrite/single_key/value_pair_in_one_ConfigLevel-8                       	20000000	       103 ns/op	      16 B/op	       1 allocs/op
-BenchmarkVenomWrite/many_key/value_pairs_in_one_ConfigLevel-8                        	 2000000	       630 ns/op	     121 B/op	       3 allocs/op
-BenchmarkVenomWrite/many_nested_key/value_pairs_in_one_ConfigLevel-8                 	 1000000	      1896 ns/op	     922 B/op	       7 allocs/op
-BenchmarkVenomWrite/many_key/value_pairs_in_many_ConfigLevels-8                      	 2000000	       660 ns/op	     121 B/op	       3 allocs/op
-BenchmarkVenomWrite/many_nested_key/value_pairs_in_many_ConfigLevels-8               	 1000000	      1714 ns/op	     922 B/op	       7 allocs/op
+BenchmarkVenomGet/single_ConfigLevel_with_one_key/value_pair-8         	20000000	        84.6 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomGet/many_key/value_pairs_in_a_single_ConfigLevel-8       	20000000	       102 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomGet/many_key/value_pairs_spread_across_multiple_ConfigLevels-8         	20000000	        99.2 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomWrite/single_key/value_pair_in_one_ConfigLevel-8                       	20000000	        89.0 ns/op	      16 B/op	       1 allocs/op
+BenchmarkVenomWrite/many_key/value_pairs_in_one_ConfigLevel-8                        	 2000000	       648 ns/op	     121 B/op	       3 allocs/op
+BenchmarkVenomWrite/many_nested_key/value_pairs_in_one_ConfigLevel-8                 	 1000000	      2055 ns/op	     922 B/op	       7 allocs/op
+BenchmarkVenomWrite/many_key/value_pairs_in_many_ConfigLevels-8                      	 2000000	       589 ns/op	     121 B/op	       3 allocs/op
+BenchmarkVenomWrite/many_nested_key/value_pairs_in_many_ConfigLevels-8               	 1000000	      1679 ns/op	     922 B/op	       7 allocs/op
 ```

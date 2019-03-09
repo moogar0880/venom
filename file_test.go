@@ -91,7 +91,8 @@ func TestLoadFile(t *testing.T) {
 			err := v.LoadFile(test.filename)
 
 			assertEqualErrors(t, test.err, err)
-			assert.EqualValues(t, v.config[FileLevel], test.expect)
+			st := v.Store.(*DefaultConfigStore)
+			assert.EqualValues(t, st.config[FileLevel], test.expect)
 		})
 	}
 }
@@ -137,7 +138,8 @@ func TestLoadDirectory(t *testing.T) {
 			err := v.LoadDirectory(test.dir, test.recurse)
 
 			assertEqualErrors(t, test.err, err)
-			assert.EqualValues(t, v.config[FileLevel], test.expect)
+			st := v.Store.(*DefaultConfigStore)
+			assert.EqualValues(t, st.config[FileLevel], test.expect)
 		})
 	}
 }

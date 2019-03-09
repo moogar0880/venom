@@ -93,7 +93,8 @@ func TestGlobalVenom(t *testing.T) {
 
 			// clear the instance and assert that it's empty
 			Clear()
-			assert.Empty(t, v.config)
+			st := v.Store.(*DefaultConfigStore)
+			assert.Empty(t, st.config)
 		})
 	}
 }
@@ -144,7 +145,8 @@ func TestGlobalDebug(t *testing.T) {
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
 			v = New()
-			v.config[EnvironmentLevel] = test.configs
+			st := v.Store.(*DefaultConfigStore)
+			st.config[EnvironmentLevel] = test.configs
 
 			actual := Debug()
 			assert.Equal(t, test.expect, actual, actual)
@@ -184,5 +186,6 @@ func TestGlobalAlias(t *testing.T) {
 
 func TestGlobalRegisterResolver(t *testing.T) {
 	v.RegisterResolver(EnvironmentLevel, defaultEnvResolver)
-	assert.Contains(t, v.resolvers, EnvironmentLevel)
+	st := v.Store.(*DefaultConfigStore)
+	assert.Contains(t, st.resolvers, EnvironmentLevel)
 }
