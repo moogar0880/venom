@@ -67,6 +67,12 @@ func NewSafe() *Venom {
 	return NewWithStore(NewSafeConfigStore())
 }
 
+// NewLogable returns a newly initialized Venom instance that will log to an
+// interface (default is stdout) when reads and writes are done.
+func NewLogable() *Venom {
+	return NewWithStore(NewLogableConfigStore())
+}
+
 // NewWithStore returns a newly initialized Venom instance that wraps the
 // provided ConfigStore.
 func NewWithStore(s ConfigStore) *Venom {
