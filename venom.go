@@ -167,3 +167,27 @@ func (v *Venom) Debug() string {
 func (v *Venom) Size() int {
 	return v.Store.Size()
 }
+
+// SetLogger takes a LoggingInterface which can be any type which implements
+// the function Print(...interface{}) and sets that logging interface as the
+// log used by the underlying ConfigStore
+func (v *Venom) SetLogger(l LoggingInterface) {
+	v.Store.SetLogger(l)
+}
+
+// GetLogger returns the LoggingInterface from the underlying ConfigStore
+func (v *Venom) GetLogger() LoggingInterface {
+	return v.Store.GetLogger()
+}
+
+// SetPrefix sets the leading value of the structured log line when using a
+// LogableConfigStore as the underlying ConfigStore
+func (v *Venom)	SetPrefix(s string) {
+	v.Store.SetPrefix(s)
+}
+
+// SetSuffix sets the trailing value of the structured log line when using a
+// LogableConfigStore as the underlying ConfigStore
+func (v *Venom)	SetSuffix(s string) {
+	v.Store.SetSuffix(s)
+}
