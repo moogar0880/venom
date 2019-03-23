@@ -164,23 +164,23 @@ func (s *DefaultConfigStore) Debug() string {
 }
 
 // SetLogger is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *DefaultConfigStore) SetLogger(lg LoggingInterface) {
 }
 
 // GetLogger is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *DefaultConfigStore) GetLogger() LoggingInterface {
 	return nil
 }
 
 // SetPrefix is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *DefaultConfigStore) SetPrefix(str string) {
 }
 
 // SetSuffix is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *DefaultConfigStore) SetSuffix(str string) {
 }
 
@@ -267,23 +267,23 @@ func (s *SafeConfigStore) Size() int {
 }
 
 // SetLogger is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *SafeConfigStore) SetLogger(lg LoggingInterface) {
 }
 
 // GetLogger is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *SafeConfigStore) GetLogger() LoggingInterface {
 	return nil
 }
 
 // SetPrefix is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *SafeConfigStore) SetPrefix(str string) {
 }
 
 // SetSuffix is not implemented for a DefaultConfigStore and is present
-// only to satisfy the interface.
+// only to satisfy the ConfigStore interface.
 func (s *SafeConfigStore) SetSuffix(str string) {
 }
 

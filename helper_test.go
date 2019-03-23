@@ -6,6 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestLogger has a no-op Print() method
+type TestLogger struct {}
+func (tl *TestLogger) Print(i ...interface{}) {}
+
 // kv is a test struct containing a (k)ey and a (v)alue
 type kv struct {
 	k string

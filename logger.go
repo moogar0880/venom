@@ -15,7 +15,6 @@ const (
 // in order to be used as the logging mechanism for a LoggableConfigStore.
 type LoggingInterface interface {
     Print(...interface{})
-    // Printf(string, ...interface{})
 }
 
 // DefaultLogger is the struct associated with the LoggableConfigStore. It has
