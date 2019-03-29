@@ -11,9 +11,7 @@ func TestConfigStoreSetAndFind(t *testing.T) {
 		testVenom(t, NewSafeConfigStore())
 	})
 	t.Run("LogableConfigStore", func(t *testing.T) {
-		lg := NewLogableConfigStore()
-		lg.SetLogger(&TestLogger{})
-		testVenom(t, lg)
+		testVenom(t, NewLogableWith(&TestLogger{}))
 	})
 	t.Run("Venom", func(t *testing.T) {
 		testVenom(t, New())
@@ -63,9 +61,7 @@ func TestConfigStoreAlias(t *testing.T) {
 		testAlias(t, NewSafeConfigStore())
 	})
 	t.Run("LogableConfigStore", func(t *testing.T) {
-		lg := NewLogableConfigStore()
-		lg.SetLogger(&TestLogger{})		
-		testAlias(t, lg)
+		testAlias(t, NewLogableWith(&TestLogger{}))
 	})
 	t.Run("Venom", func(t *testing.T) {
 		testAlias(t, New())
@@ -90,9 +86,7 @@ func TestConfigStoreEdgeCases(t *testing.T) {
 		testEdgeCases(t, NewSafeConfigStore())
 	})
 	t.Run("LogableConfigStore", func(t *testing.T) {
-		lg := NewLogableConfigStore()
-		lg.SetLogger(&TestLogger{})		
-		testEdgeCases(t, lg)
+		testEdgeCases(t, NewLogableWith(&TestLogger{}))
 	})
 	t.Run("Venom", func(t *testing.T) {
 		testEdgeCases(t, New())
