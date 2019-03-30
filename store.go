@@ -40,9 +40,6 @@ type DefaultConfigStore struct {
 
 	// aliases contains the collection of any aliased config values
 	aliases map[string]string
-
-	// if a store which is logable is desired
-	log *DefaultLogger
 }
 
 // NewDefaultConfigStore returns a newly allocated DefaultConfigStore.
@@ -52,17 +49,6 @@ func NewDefaultConfigStore() *DefaultConfigStore {
 		usedLevels: NewConfigLevelHeap(),
 		resolvers:  make(map[ConfigLevel]Resolver),
 		aliases:    make(map[string]string),
-	}
-}
-
-// unexported function for generating a DefaultConfigStore with a log.
-func newLogableConfigStoreWith(l LoggingInterface) *DefaultConfigStore {
-	return &DefaultConfigStore{
-		config:     make(ConfigLevelMap),
-		usedLevels: NewConfigLevelHeap(),
-		resolvers:  make(map[ConfigLevel]Resolver),
-		aliases:    make(map[string]string),
-		log: NewLogger(l),
 	}
 }
 
@@ -91,15 +77,12 @@ func (s *DefaultConfigStore) Alias(from, to string) {
 // one didn't previously exist.
 func (s *DefaultConfigStore) SetLevel(level ConfigLevel, key string, value interface{}) {
 	s.setIfNotExists(level, key, value)
-	s.writeIfLog(key, value)
 }
 
 // Find searches for the given key, returning the discovered value and a
 // boolean indicating whether or not the key was found
 func (s *DefaultConfigStore) Find(key string) (interface{}, bool) {
-	val, bl := s.find(key)
-	s.writeIfLog(key, val)
-	return val, bl
+	return s.find(key)
 }
 
 // Merge merges the provided config map into the ConfigLevel l, allocating
@@ -123,12 +106,6 @@ func (s *DefaultConfigStore) setIfNotExists(l ConfigLevel, key string, value int
 		heap.Push(s.usedLevels, l)
 	}
 	setNested(s.config[l], strings.Split(key, Delim), value)
-}
-
-func (s *DefaultConfigStore) writeIfLog(a ...interface{}) {
-	if s.log != nil {
-		s.log.Write(a)
-	}
 }
 
 // setNested inserts the provided value into the nested keyspace as defined by
@@ -266,26 +243,29 @@ func (s *SafeConfigStore) Size() int {
 	return s.c.Size()
 }
 
-// LogableConfigStore implements the ConfigStore interface and provides a store
-// that is safe to read and write from multiple goroutines.
-type LogableConfigStore struct {
-	c  *DefaultConfigStore
+// LoggableConfigStore implements the ConfigStore interface and provides a store
+// a field for reference to a logging mechanism to log on reads/writes
+type LoggableConfigStore struct {
+	c   ConfigStore
+	log DefaultLogger
 }
 
-// NewLogableConfigStore takes a LoggingInterface and returns a new ConfigStore
+// NewLoggableConfigStore takes a Logging and returns a new ConfigStore
 // with said interface as the logging mechanism used for read and writes.
-func NewLogableConfigStoreWith(l LoggingInterface) ConfigStore {
-	return &LogableConfigStore{
-		c: newLogableConfigStoreWith(l),
+func NewLoggableConfigStoreWith(l Logging) ConfigStore {
+	return &LoggableConfigStore{
+		c: NewDefaultConfigStore(),
+		log: NewLogger(l),
 	}
 }
 
-// NewLogableConfigStore returns a ConfigStore with a default logging mechanism
+// NewLoggableConfigStore returns a ConfigStore with a default logging mechanism
 // set to write to os.Stdout.
-func NewLogableConfigStore() ConfigStore {
+func NewLoggableConfigStore() ConfigStore {
 	l := log.New(os.Stdout, "", 0)
-	return &LogableConfigStore{
-		c: newLogableConfigStoreWith(l),
+	return &LoggableConfigStore{
+		c: NewDefaultConfigStore(),
+		log: NewLogger(l),		
 	}
 }
 
@@ -294,50 +274,52 @@ func NewLogableConfigStore() ConfigStore {
 //
 // Additionally, if the provided level is not already in the current collection
 // of active config levels, it will be added automatically
-func (l *LogableConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
+func (l *LoggableConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
 	l.c.RegisterResolver(level, r)
 }
 
 // SetLevel is a generic key/value setter method. It sets the provided k/v at
 // the specified level inside the map, conditionally creating a new ConfigMap if
 // one didn't previously exist.
-func (l *LogableConfigStore) SetLevel(level ConfigLevel, key string, value interface{}) {
+func (l *LoggableConfigStore) SetLevel(level ConfigLevel, key string, value interface{}) {
 	l.c.SetLevel(level, key, value)
+	l.log.Write("SET", level, key, value)
 }
 
 // Merge merges the provided config map into the ConfigLevel l, allocating
 // space for ConfigLevel l if the level hasn't already been allocated.
-func (l *LogableConfigStore) Merge(cl ConfigLevel, data ConfigMap) {
+func (l *LoggableConfigStore) Merge(cl ConfigLevel, data ConfigMap) {
 	l.c.Merge(cl, data)
 }
 
 // Alias registers an alias for a given key. This allows consumers to access
 // the same config via a different key, increasing the backwards
 // compatibility of an application.
-func (l *LogableConfigStore) Alias(from, to string) {
+func (l *LoggableConfigStore) Alias(from, to string) {
 	l.c.Alias(from, to)
 }
 
 // Find searches for the given key, returning the discovered value and a
 // boolean indicating whether or not the key was found
-func (l *LogableConfigStore) Find(key string) (interface{}, bool) {
+func (l *LoggableConfigStore) Find(key string) (interface{}, bool) {
 	a, b := l.c.Find(key)
+	l.log.Write("GET", a, b)
 	return a, b
 }
 
 // Clear removes all data from the ConfigLevelMap and resets the heap of config
 // levels.
-func (l *LogableConfigStore) Clear() {
+func (l *LoggableConfigStore) Clear() {
 	l.c.Clear()
 }
 
 // Debug returns the current venom ConfigLevelMap as a pretty-printed JSON
 // string.
-func (l *LogableConfigStore) Debug() string {
+func (l *LoggableConfigStore) Debug() string {
 	return l.c.Debug()
 }
 
 // Size returns the number of config levels stored in this ConfigStore.
-func (l *LogableConfigStore) Size() int {
+func (l *LoggableConfigStore) Size() int {
 	return l.c.Size()
 }

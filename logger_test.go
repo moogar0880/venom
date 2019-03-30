@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewLogableWith(t *testing.T) {
+func TestNewLoggableWith(t *testing.T) {
 	testIO := []struct {
 		tc   string
-		lgr  LoggingInterface
+		lgr  Logging
 	}{
 		{
 			tc:  "should be able to set a no-op logging interface",
@@ -30,13 +30,13 @@ func TestNewLogableWith(t *testing.T) {
 
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
-			l := NewLogableWith(test.lgr)
+			l := NewLoggableWith(test.lgr)
 			assert.IsType(t, l, &Venom{})
 		})
 	}
 }
 
-func TestNewLogable(t *testing.T) {
+func TestNewLoggable(t *testing.T) {
 	testIO := []struct {
 		tc  string
 		f   func() *Venom
@@ -44,8 +44,8 @@ func TestNewLogable(t *testing.T) {
 		kv  kv
 	}{
 		{
-			tc: "should be receive a default to stdout if logable",
-			f:  NewLogable,
+			tc: "should be receive a default to stdout if Loggable",
+			f:  NewLoggable,
 			log: true,
 			kv: kv{k: "foo", v: "bar"},
 		},
@@ -63,25 +63,25 @@ func TestNewLogable(t *testing.T) {
 		},
 		{
 			tc: "should log to stdout with a value type int",
-			f:  NewLogable,
+			f:  NewLoggable,
 			log: true,
 			kv: kv{k: "foo", v: 100},
 		},
 		{
 			tc: "should log to stdout with a value type float",
-			f:  NewLogable,
+			f:  NewLoggable,
 			log: true,
 			kv: kv{k: "foo", v: 10.0},
 		},
 		{
 			tc: "should log to stdout with a value type boolean true",
-			f:  NewLogable,
+			f:  NewLoggable,
 			log: true,
 			kv: kv{k: "foo", v: true},
 		},
 		{
 			tc: "should log to stdout with a value type boolean false",
-			f:  NewLogable,
+			f:  NewLoggable,
 			log: true,
 			kv: kv{k: "foo", v: false},
 		},
@@ -91,7 +91,7 @@ func TestNewLogable(t *testing.T) {
 		t.Run(test.tc, func(t *testing.T) {
 			out := redirectStdout(test)
 			if test.log {
-				assert.Contains(t, out, fmt.Sprintf("[venom]:  [%s %s]", test.kv.k, test.kv.v))
+				assert.Contains(t, out, fmt.Sprintf("[venom]: SET 0 %v %v", test.kv.k, test.kv.v))
 			} else {
 				assert.Empty(t, out)
 			}

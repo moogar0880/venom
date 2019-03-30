@@ -33,7 +33,7 @@ func assertEqualErrors(t *testing.T, expect, actual error) {
 	assert.Equal(t, expect, actual, msg)
 }
 
-// redirectStdout is explicitly for TestNewLogable test to pipe the contents
+// redirectStdout is explicitly for TestNewLoggable test to pipe the contents
 // sent to os.Stdout when implementing using the default logger.
 func redirectStdout(test struct{
 	tc  string

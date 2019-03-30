@@ -45,8 +45,6 @@ type ConfigLevelMap map[ConfigLevel]ConfigMap
 // Venom is the configuration registry responsible for storing and managing
 // arbitrary configuration keys and values.
 type Venom struct {
-	// Store is the storage mechanism used by this venom instance to manage
-	// it's underlying configuration storage.
 	Store ConfigStore
 }
 
@@ -67,16 +65,16 @@ func NewSafe() *Venom {
 	return NewWithStore(NewSafeConfigStore())
 }
 
-// NewLogable takes a LoggingInterface and returns a newly initialized Venom
+// NewLoggable takes a Logging and returns a newly initialized Venom
 // instance that will log to said interface upon reads and writes.
-func NewLogableWith(l LoggingInterface) *Venom {
-	lcs := NewLogableConfigStoreWith(l)
+func NewLoggableWith(l Logging) *Venom {
+	lcs := NewLoggableConfigStoreWith(l)
 	return NewWithStore(lcs)
 }
 
-// NewLogable returns a Venom instance with a default log set to standard out.
-func NewLogable() *Venom {
-	return NewWithStore(NewLogableConfigStore())
+// NewLoggable returns a Venom instance with a default log set to standard out.
+func NewLoggable() *Venom {
+	return NewWithStore(NewLoggableConfigStore())
 }
 
 // NewWithStore returns a newly initialized Venom instance that wraps the
