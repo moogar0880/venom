@@ -263,10 +263,7 @@ func NewLoggableConfigStoreWith(l Logging) ConfigStore {
 // set to write to os.Stdout.
 func NewLoggableConfigStore() ConfigStore {
 	l := log.New(os.Stdout, "", 0)
-	return &LoggableConfigStore{
-		c: NewDefaultConfigStore(),
-		log: NewLogger(l),		
-	}
+	return NewLoggableConfigStoreWith(l)
 }
 
 // RegisterResolver registers a custom config resolver for the specified
