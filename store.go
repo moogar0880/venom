@@ -247,7 +247,7 @@ func (s *SafeConfigStore) Size() int {
 // a field for reference to a logging mechanism to log on reads/writes
 type LoggableConfigStore struct {
 	c   ConfigStore
-	log DefaultLogger
+	log Logging
 }
 
 // NewLoggableConfigStore takes a Logging and returns a new ConfigStore
@@ -255,7 +255,7 @@ type LoggableConfigStore struct {
 func NewLoggableConfigStoreWith(l Logging) ConfigStore {
 	return &LoggableConfigStore{
 		c: NewDefaultConfigStore(),
-		log: NewLogger(l),
+		log: l,
 	}
 }
 
@@ -280,7 +280,7 @@ func (l *LoggableConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
 // one didn't previously exist.
 func (l *LoggableConfigStore) SetLevel(level ConfigLevel, key string, value interface{}) {
 	l.c.SetLevel(level, key, value)
-	l.log.Write("SET", level, key, value)
+	l.log.Print(formatLogLine("SET", level, key, value))
 }
 
 // Merge merges the provided config map into the ConfigLevel l, allocating
@@ -300,7 +300,7 @@ func (l *LoggableConfigStore) Alias(from, to string) {
 // boolean indicating whether or not the key was found
 func (l *LoggableConfigStore) Find(key string) (interface{}, bool) {
 	a, b := l.c.Find(key)
-	l.log.Write("GET", a, b)
+	l.log.Print(formatLogLine("GET", a, b))
 	return a, b
 }
 

@@ -16,29 +16,13 @@ type Logging interface {
 	Print(...interface{})
 }
 
-// DefaultLogger is the struct associated with the LoggableConfigStore. It has
-// three configurable fields which ultimately compose structured log lines.
-type DefaultLogger struct {
-	log    Logging
-	suffix string
-}
-
-// NewDefaultLogger returns a reference to an instance of a DefaultLogger
-// struct with defaults for all fields.
-func NewLogger(l Logging) DefaultLogger {
-	return DefaultLogger {
-		log:    l,
-		suffix: LOG_NAME,
-	}
-}
-
-// Write takes a slice of interfaces and prints them as a structured log line
-// using the DefaultLogger's log which is a Logging.
-func (lg *DefaultLogger) Write(a ...interface{}) {
-	logLine := fmt.Sprintf("%s%s:", time.Now().UTC().Format(TIME_FORMAT), lg.suffix)
+// formatLogLine produces a default log line structure for the Logging interface
+// print function to use.
+func formatLogLine(a ...interface{}) string {
+	logLine := fmt.Sprintf("%s%s:", time.Now().UTC().Format(TIME_FORMAT), LOG_NAME)
 	for _, v := range a {
 		logLine += fmt.Sprintf(" %v", v)
 	}
 
-	lg.log.Print(logLine)
+	return logLine
 }
