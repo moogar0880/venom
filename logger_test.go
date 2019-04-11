@@ -2,8 +2,8 @@ package venom
 
 import (
 	"fmt"
-	"os"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,8 +11,8 @@ import (
 
 func TestNewLoggableWith(t *testing.T) {
 	testIO := []struct {
-		tc   string
-		lgr  Logging
+		tc  string
+		lgr Logger
 	}{
 		{
 			tc:  "should be able to set a no-op logging interface",
@@ -30,7 +30,8 @@ func TestNewLoggableWith(t *testing.T) {
 
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
-			l := NewLoggableWith(test.lgr)
+			lw := NewEntry(test.lgr)
+			l := NewLoggableWith(lw)
 			assert.IsType(t, l, &Venom{})
 		})
 	}
@@ -44,46 +45,46 @@ func TestNewLoggable(t *testing.T) {
 		kv  kv
 	}{
 		{
-			tc: "should be receive a default to stdout if Loggable",
-			f:  NewLoggable,
+			tc:  "should be receive a default to stdout if Loggable",
+			f:   NewLoggable,
 			log: true,
-			kv: kv{k: "foo", v: "bar"},
+			kv:  kv{k: "foo", v: "bar"},
 		},
 		{
-			tc: "should not log if new default store",
-			f:  New,
+			tc:  "should not log if new default store",
+			f:   New,
 			log: false,
-			kv: kv{k: "foo", v: "bar"},
+			kv:  kv{k: "foo", v: "bar"},
 		},
 		{
-			tc: "should not log if new safe store",
-			f: NewSafe,
+			tc:  "should not log if new safe store",
+			f:   NewSafe,
 			log: false,
-			kv: kv{k: "foo", v: "bar"},
+			kv:  kv{k: "foo", v: "bar"},
 		},
 		{
-			tc: "should log to stdout with a value type int",
-			f:  NewLoggable,
+			tc:  "should log to stdout with a value type int",
+			f:   NewLoggable,
 			log: true,
-			kv: kv{k: "foo", v: 100},
+			kv:  kv{k: "foo", v: 100},
 		},
 		{
-			tc: "should log to stdout with a value type float",
-			f:  NewLoggable,
+			tc:  "should log to stdout with a value type float",
+			f:   NewLoggable,
 			log: true,
-			kv: kv{k: "foo", v: 10.0},
+			kv:  kv{k: "foo", v: 10.0},
 		},
 		{
-			tc: "should log to stdout with a value type boolean true",
-			f:  NewLoggable,
+			tc:  "should log to stdout with a value type boolean true",
+			f:   NewLoggable,
 			log: true,
-			kv: kv{k: "foo", v: true},
+			kv:  kv{k: "foo", v: true},
 		},
 		{
-			tc: "should log to stdout with a value type boolean false",
-			f:  NewLoggable,
+			tc:  "should log to stdout with a value type boolean false",
+			f:   NewLoggable,
 			log: true,
-			kv: kv{k: "foo", v: false},
+			kv:  kv{k: "foo", v: false},
 		},
 	}
 
@@ -91,7 +92,7 @@ func TestNewLoggable(t *testing.T) {
 		t.Run(test.tc, func(t *testing.T) {
 			out := redirectStdout(test)
 			if test.log {
-				assert.Contains(t, out, fmt.Sprintf("[venom]: SET 0 %v %v", test.kv.k, test.kv.v))
+				assert.Contains(t, out, fmt.Sprintf("writing level=0 key=%s val=%s", test.kv.k, test.kv.v))
 			} else {
 				assert.Empty(t, out)
 			}

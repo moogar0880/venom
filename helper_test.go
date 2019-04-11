@@ -9,8 +9,15 @@ import (
 )
 
 // TestLogger has a no-op Print() method
-type TestLogger struct {}
+type TestLogger struct{}
+
 func (tl *TestLogger) Print(a ...interface{}) {}
+
+// TestLogWrapper has no-op ReadLog WriteLog methods
+type TestLogWrapper struct{}
+
+func (tl *TestLogWrapper) LogWrite(level ConfigLevel, key string, val interface{}) {}
+func (tl *TestLogWrapper) LogRead(key string, val interface{}, bl bool)            {}
 
 // kv is a test struct containing a (k)ey and a (v)alue
 type kv struct {
@@ -35,7 +42,7 @@ func assertEqualErrors(t *testing.T, expect, actual error) {
 
 // redirectStdout is explicitly for TestNewLoggable test to pipe the contents
 // sent to os.Stdout when implementing using the default logger.
-func redirectStdout(test struct{
+func redirectStdout(test struct {
 	tc  string
 	f   func() *Venom
 	log bool

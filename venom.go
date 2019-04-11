@@ -65,9 +65,9 @@ func NewSafe() *Venom {
 	return NewWithStore(NewSafeConfigStore())
 }
 
-// NewLoggable takes a Logging and returns a newly initialized Venom
-// instance that will log to said interface upon reads and writes.
-func NewLoggableWith(l Logging) *Venom {
+// NewLoggable takes a LogWrapper and returns a newly initialized Venom
+// instance that will log to a Logger interface upon reads and writes.
+func NewLoggableWith(l LogWrapper) *Venom {
 	lcs := NewLoggableConfigStoreWith(l)
 	return NewWithStore(lcs)
 }
