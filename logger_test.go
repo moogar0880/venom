@@ -12,12 +12,8 @@ import (
 func TestNewLoggableWith(t *testing.T) {
 	testIO := []struct {
 		tc  string
-		lgr Logger
+		lgr *log.Logger
 	}{
-		{
-			tc:  "should be able to set a no-op logging interface",
-			lgr: &TestLogger{},
-		},
 		{
 			tc:  "should be able set to an io.Writer (stderr)",
 			lgr: log.New(os.Stderr, "", 0),
@@ -30,7 +26,7 @@ func TestNewLoggableWith(t *testing.T) {
 
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
-			lw := NewEntry(test.lgr)
+			lw := NewStoreLogger(test.lgr)
 			l := NewLoggableWith(lw)
 			assert.IsType(t, l, &Venom{})
 		})

@@ -243,16 +243,16 @@ func (s *SafeConfigStore) Size() int {
 	return s.c.Size()
 }
 
-// LoggableConfigStore implements the ConfigStore interface and provides a store
-// a field for reference to a LogWrapper to log on reads and writes.
+// LoggableConfigStore implements the ConfigStore interface and provides a log
+// field for reference to a Logger which will log on reads and writes.
 type LoggableConfigStore struct {
 	c   ConfigStore
-	log LogWrapper
+	log Logger
 }
 
-// NewLoggableConfigStore takes a LogWrapper and returns a new ConfigStore
+// NewLoggableConfigStore takes a Logger and returns a new ConfigStore
 // with said interface as the logging mechanism used for read and writes.
-func NewLoggableConfigStoreWith(l LogWrapper) ConfigStore {
+func NewLoggableConfigStoreWith(l Logger) ConfigStore {
 	return &LoggableConfigStore{
 		c:   NewDefaultConfigStore(),
 		log: l,
@@ -262,7 +262,7 @@ func NewLoggableConfigStoreWith(l LogWrapper) ConfigStore {
 // NewLoggableConfigStore returns a ConfigStore with a default logging mechanism
 // set to write to os.Stdout.
 func NewLoggableConfigStore() ConfigStore {
-	l := NewEntry(log.New(os.Stdout, "", 0))
+	l := NewStoreLogger(log.New(os.Stdout, "", 0))
 	return NewLoggableConfigStoreWith(l)
 }
 

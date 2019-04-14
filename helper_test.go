@@ -8,16 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestLogger has a no-op Print() method
+// TestLogger has no-op ReadLog WriteLog methods
 type TestLogger struct{}
 
-func (tl *TestLogger) Print(a ...interface{}) {}
-
-// TestLogWrapper has no-op ReadLog WriteLog methods
-type TestLogWrapper struct{}
-
-func (tl *TestLogWrapper) LogWrite(level ConfigLevel, key string, val interface{}) {}
-func (tl *TestLogWrapper) LogRead(key string, val interface{}, bl bool)            {}
+func (tl *TestLogger) LogWrite(level ConfigLevel, key string, val interface{}) {}
+func (tl *TestLogger) LogRead(key string, val interface{}, bl bool)            {}
 
 // kv is a test struct containing a (k)ey and a (v)alue
 type kv struct {
