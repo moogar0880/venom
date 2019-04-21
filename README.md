@@ -151,6 +151,47 @@ flagResolver := &venom.FlagsetResolver{}
 
 venom.RegisterResolver(venom.FlagLevel, flagResolver)
 ```
+#### Default and Custom Logging
+
+You can initialize Venom to log to stdout (default) on reads and writes or
+provide a logging interface of your choice.
+
+```go
+venDef := venom.NewLoggable()
+venDef.SetDefault("baz", "bee")
+venDef.Get("baz")
+// 2019-04-21T10:01:39.529Z[venom]: writing level=0 key=baz val=bee
+// 2019-04-21T10:01:39.529Z[venom]: reading key=baz val=bee exist=true
+```
+
+There is a tiny bit of overhead to use a custom logger but is straight forward
+to do. For example, using [sirupsen/logrus](https://github.com/sirupsen/logrus):
+
+```go
+// create a wrapping struct to hold the logging mechanism
+type LogrusLogger struct {
+    log *logrus.Entry
+}
+
+// create read and write methods which have these signatures
+// and configure the log line as you choose
+func (l *LogrusLogger) LogWrite(level venom.ConfigLevel, key string, val interface{}) {
+    l.log.WithFields(logrus.Fields{"level": level,"key": key,"val": val}).Info("writing config value")
+}
+
+func (l *LogrusLogger) LogRead(key string, val interface{}, bl bool) {
+    l.log.WithFields(logrus.Fields{"key": key,"val": val,"exist": bl}).Info("read config value")
+}
+
+lgr := logrus.New()
+l := logrus.NewEntry(lgr)
+ven := venom.NewLoggableWith(&LogrusLogger{log: l})
+
+ven.SetDefault("foo", "bar")
+ven.Get("foo")
+// INFO[0000] writing config value               fields.level=0 key=foo val=bar
+// INFO[0000] read config value                  exist=true key=foo val=bar
+```
 
 #### Provide a Custom `flag.FlagSet`
 
@@ -283,7 +324,7 @@ creating a new Venom instance with a predefined `ConfigStore` via the
 ven := venom.NewWithStore(venom.NewSafeConfigStore())
 
 ven.SetDefault("verbose", false)
-````
+```
 
 ## Benchmarks
 
