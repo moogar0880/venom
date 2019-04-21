@@ -3,6 +3,8 @@ package venom
 import (
 	"container/heap"
 	"encoding/json"
+	"log"
+	"os"
 	"strings"
 	"sync"
 )
@@ -160,7 +162,7 @@ func (s *DefaultConfigStore) Debug() string {
 }
 
 // SafeConfigStore implements the ConfigStore interface and provides a store
-// that is safe to read and write from multiple goroutines.
+// that is safe to read and write from multiple go routines.
 type SafeConfigStore struct {
 	c  *DefaultConfigStore
 	mu sync.Mutex
@@ -239,4 +241,82 @@ func (s *SafeConfigStore) Size() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.c.Size()
+}
+
+// LoggableConfigStore implements the ConfigStore interface and provides a log
+// field for reference to a Logger which will log on reads and writes.
+type LoggableConfigStore struct {
+	c   ConfigStore
+	log Logger
+}
+
+// NewLoggableConfigStore takes a Logger and returns a new ConfigStore
+// with said interface as the logging mechanism used for read and writes.
+func NewLoggableConfigStoreWith(l Logger) ConfigStore {
+	return &LoggableConfigStore{
+		c:   NewDefaultConfigStore(),
+		log: l,
+	}
+}
+
+// NewLoggableConfigStore returns a ConfigStore with a default logging mechanism
+// set to write to os.Stdout.
+func NewLoggableConfigStore() ConfigStore {
+	l := NewStoreLogger(log.New(os.Stdout, "", 0))
+	return NewLoggableConfigStoreWith(l)
+}
+
+// RegisterResolver registers a custom config resolver for the specified
+// ConfigLevel.
+//
+// Additionally, if the provided level is not already in the current collection
+// of active config levels, it will be added automatically
+func (l *LoggableConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
+	l.c.RegisterResolver(level, r)
+}
+
+// SetLevel is a generic key/value setter method. It sets the provided k/v at
+// the specified level inside the map, conditionally creating a new ConfigMap if
+// one didn't previously exist.
+func (l *LoggableConfigStore) SetLevel(level ConfigLevel, key string, value interface{}) {
+	l.c.SetLevel(level, key, value)
+	l.log.LogWrite(level, key, value)
+}
+
+// Merge merges the provided config map into the ConfigLevel l, allocating
+// space for ConfigLevel l if the level hasn't already been allocated.
+func (l *LoggableConfigStore) Merge(cl ConfigLevel, data ConfigMap) {
+	l.c.Merge(cl, data)
+}
+
+// Alias registers an alias for a given key. This allows consumers to access
+// the same config via a different key, increasing the backwards
+// compatibility of an application.
+func (l *LoggableConfigStore) Alias(from, to string) {
+	l.c.Alias(from, to)
+}
+
+// Find searches for the given key, returning the discovered value and a
+// boolean indicating whether or not the key was found
+func (l *LoggableConfigStore) Find(key string) (interface{}, bool) {
+	a, b := l.c.Find(key)
+	l.log.LogRead(key, a, b)
+	return a, b
+}
+
+// Clear removes all data from the ConfigLevelMap and resets the heap of config
+// levels.
+func (l *LoggableConfigStore) Clear() {
+	l.c.Clear()
+}
+
+// Debug returns the current venom ConfigLevelMap as a pretty-printed JSON
+// string.
+func (l *LoggableConfigStore) Debug() string {
+	return l.c.Debug()
+}
+
+// Size returns the number of config levels stored in this ConfigStore.
+func (l *LoggableConfigStore) Size() int {
+	return l.c.Size()
 }

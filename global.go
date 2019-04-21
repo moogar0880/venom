@@ -35,7 +35,7 @@ func SetOverride(key string, value interface{}) {
 	v.SetOverride(key, value)
 }
 
-// Get retrievs the requested key from the global venom instance
+// Get retrieves the requested key from the global venom instance
 func Get(key string) interface{} {
 	return v.Get(key)
 }
