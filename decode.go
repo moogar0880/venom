@@ -85,7 +85,7 @@ func (d *decoder) value(val reflect.Value) error {
 	typ := elem.Type()
 
 	for i := 0; i < elem.NumField(); i++ {
-		// pull out the qstring struct tag
+		// pull out the venom struct tag
 		elemField := elem.Field(i)
 		typField := typ.Field(i)
 
