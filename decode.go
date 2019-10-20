@@ -85,25 +85,24 @@ func (d *decoder) value(val reflect.Value) error {
 	typ := elem.Type()
 
 	for i := 0; i < elem.NumField(); i++ {
-		// pull out the qstring struct tag
+		// pull out the venom struct tag
 		elemField := elem.Field(i)
 		typField := typ.Field(i)
 
-		// TODO: implement omitempty
-		tag := typField.Tag.Get(tag)
-		if tag == "" {
+		fieldTag := typField.Tag.Get(tag)
+		if fieldTag == "" {
 			// resolvable fields must have at least the `flag` struct tag
-			tag = strings.ToLower(typField.Name)
+			fieldTag = strings.ToLower(typField.Name)
 		}
 
 		// determine if this is an unsettable field or was explicitly set to be
 		// ignored
-		if !elemField.CanSet() || tag == "-" {
+		if !elemField.CanSet() || fieldTag == "-" {
 			continue
 		}
 
 		// add the current namespace to the namespace context
-		d.ns.add(tag)
+		d.ns.add(fieldTag)
 
 		// fail early if the specified config doesn't exist
 		config, ok := d.data.Find(d.ns.String())

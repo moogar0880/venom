@@ -22,20 +22,41 @@ type ConfigLevel int
 // are nested under a ConfigLevel which determines their priority
 type ConfigMap map[string]interface{}
 
-func (c ConfigMap) merge(d ConfigMap) {
+func (c ConfigMap) merge(d ConfigMap) ConfigMap {
 	for key, val := range d {
 		switch actual := val.(type) {
 		case map[string]interface{}:
-			// if it smells like a ConfigMap, then treat it like one
-			c[key] = func() ConfigMap {
-				m := make(ConfigMap)
-				m.merge(ConfigMap(actual))
-				return m
-			}()
+			var existing ConfigMap
+			if _, ok := c[key]; !ok {
+				existing = make(ConfigMap)
+			} else {
+				existing = c[key].(ConfigMap)
+			}
+
+			c[key] = existing.merge(actual)
+		case map[interface{}]interface{}:
+			var existing ConfigMap
+			if _, ok := c[key]; !ok {
+				existing = make(ConfigMap)
+			} else {
+				existing = c[key].(ConfigMap)
+			}
+			c[key] = existing.merge(mapInterfaceInterfaceToStrInterface(actual))
 		default:
 			c[key] = val
 		}
 	}
+	return c
+}
+
+func mapInterfaceInterfaceToStrInterface(src map[interface{}]interface{}) map[string]interface{} {
+	data := make(map[string]interface{})
+	for key, value := range src {
+		if actualKey, ok := key.(string); ok {
+			data[actualKey] = value
+		}
+	}
+	return data
 }
 
 // ConfigLevelMap is a mapping of config levels to the maps which contain

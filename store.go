@@ -92,7 +92,7 @@ func (s *DefaultConfigStore) Merge(l ConfigLevel, data ConfigMap) {
 		s.config[l] = make(ConfigMap)
 		heap.Push(s.usedLevels, l)
 	}
-	s.config[l].merge(data)
+	s.config[l] = s.config[l].merge(data)
 }
 
 // Size returns the number of config levels stored in this ConfigStore.
