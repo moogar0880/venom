@@ -21,11 +21,6 @@ func TestRegisterExtension(t *testing.T) {
 			key:    jsonKey,
 			loader: JSONLoader,
 		},
-		{
-			tc:     "should load XMLLoader",
-			key:    jsonKey,
-			loader: JSONLoader,
-		},
 	}
 
 	for _, test := range testIO {
@@ -62,6 +57,18 @@ func TestLoadFile(t *testing.T) {
 			},
 		},
 		{
+			tc:       "should load JSON file with nested objects",
+			filename: "testdata/config_nested.json",
+			expect: ConfigMap{
+				"foo":   "bar",
+				"level": 5.0,
+				"log": ConfigMap{
+					"level": "info",
+					"file":  "/usr/local/example.log",
+				},
+			},
+		},
+		{
 			tc:       "should error on non-existent file",
 			filename: "testdata/missing.config.json",
 			err: &os.PathError{
@@ -92,7 +99,7 @@ func TestLoadFile(t *testing.T) {
 
 			assertEqualErrors(t, test.err, err)
 			st := v.Store.(*DefaultConfigStore)
-			assert.EqualValues(t, st.config[FileLevel], test.expect)
+			assert.EqualValues(t, test.expect, st.config[FileLevel])
 		})
 	}
 }
@@ -112,6 +119,10 @@ func TestLoadDirectory(t *testing.T) {
 			expect: ConfigMap{
 				"foo":   "bar",
 				"level": 5.0,
+				"log": ConfigMap{
+					"level": "info",
+					"file":  "/usr/local/example.log",
+				},
 			},
 		},
 		{
