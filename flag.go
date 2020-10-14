@@ -23,10 +23,22 @@ var FlagSeparator = "-"
 type FlagsetResolver struct {
 	Flags     *flag.FlagSet
 	Arguments []string
+
+	// A map containing only the names and values of flags that were actually
+	// specified on the command line, as determined by a call to flag.Visit or
+	// flag.FlagSet.Visit.
+	cachedValueMap map[string]string
 }
 
 // parse will parse the specified flagset if it has not already been parsed
 func (r *FlagsetResolver) parse() error {
+	// Ensure we cache the set of flags that were specified after parsing the
+	// values on the commandline.
+	//
+	// Note that this function will immediately return if the flag values have
+	// already been cached.
+	defer r.cacheFlagValues()
+
 	// if no flagset was provided, use the default parser which parses
 	// os.Args[1:] by default
 	if r.Flags == nil {
@@ -50,6 +62,29 @@ func (r *FlagsetResolver) parse() error {
 	return r.Flags.Parse(r.Arguments)
 }
 
+func (r *FlagsetResolver) cacheFlagValues() {
+	// Ensure we don't re-cache the parsed flags every time we check for a key
+	// in the wrapped flagset.
+	if len(r.cachedValueMap) > 0 {
+		return
+	}
+
+	// Allocate our map of cached flag values.
+	r.cachedValueMap = make(map[string]string)
+
+	// For all flags in the flagset that were actually specified, inject their
+	// name and value into our cache of values.
+	if r.Flags == nil {
+		flag.Visit(func(fl *flag.Flag) {
+			r.cachedValueMap[fl.Name] = fl.Value.String()
+		})
+	} else {
+		r.Flags.Visit(func(fl *flag.Flag) {
+			r.cachedValueMap[fl.Name] = fl.Value.String()
+		})
+	}
+}
+
 // Resolve is a Resolver function and will lookup the requested config value
 // from a FlagSet
 func (r *FlagsetResolver) Resolve(keys []string, _ ConfigMap) (val interface{}, ok bool) {
@@ -58,15 +93,11 @@ func (r *FlagsetResolver) Resolve(keys []string, _ ConfigMap) (val interface{}, 
 		return nil, false
 	}
 
-	var f *flag.Flag
-	if r.Flags == nil {
-		f = flag.Lookup(strings.Join(keys, FlagSeparator))
-	} else {
-		f = r.Flags.Lookup(strings.Join(keys, FlagSeparator))
-	}
-
-	if f != nil {
-		return f.Value.String(), true
+	// Leverage our cached map of flags and their values (generated as a part
+	// of the call to r.parse() above) rather than iterating over all provided
+	// flags every time Resolve is called.
+	if value, ok := r.cachedValueMap[strings.Join(keys, FlagSeparator)]; ok {
+		return value, ok
 	}
 	return nil, false
 }
