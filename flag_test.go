@@ -70,6 +70,19 @@ func TestFlagsetResolver(t *testing.T) {
 			ok:     true,
 		},
 		{
+			tc: "should resolve expected value from FlagSet, and ignore un specified flag",
+			flags: func() *flag.FlagSet {
+				fs := flag.NewFlagSet("test", flag.ContinueOnError)
+				fs.Bool("verbose", false, "enable verbose")
+				fs.String("log-level", "WARNING", "set log level")
+				return fs
+			}(),
+			args:   []string{"-log-level=INFO"},
+			keys:   []string{"log", "level"},
+			expect: "INFO",
+			ok:     true,
+		},
+		{
 			tc:     "should fail to parse unknown flag",
 			flags:  flag.NewFlagSet("test", flag.ContinueOnError),
 			args:   []string{"-verbose"},
