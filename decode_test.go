@@ -1361,7 +1361,14 @@ func TestUnmarshal_KeyWithHyphens(t *testing.T) {
 
 	v := New()
 	v.RegisterResolver(EnvironmentLevel, &EnvironmentVariableResolver{
-		Prefix: "",
+		Translator: func(b byte) byte {
+			switch b {
+			case '-':
+				return '_'
+			default:
+				return DefaultEnvironmentVariableKeyTranslator(b)
+			}
+		},
 	})
 	_ = os.Setenv("S3_ACCESS_KEY_ID", "FOOBAR")
 

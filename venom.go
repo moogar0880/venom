@@ -24,6 +24,12 @@ var Delim = defaultDelim
 // lookups.
 type KeyTranslator func(b byte) byte
 
+// The NoOpKeyTranslator is a KeyTranslator which returns all input bytes
+// unmodified.
+func NoOpKeyTranslator(b byte) byte {
+	return b
+}
+
 // ConfigLevel is a type alias used to identify various configuration levels
 type ConfigLevel int
 

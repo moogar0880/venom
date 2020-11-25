@@ -52,15 +52,9 @@ func (r *EnvironmentVariableResolver) Resolve(keys []string, _ ConfigMap) (val i
 // used by the EnvironmentVariableResolver.
 //
 // It is responsible for mapping arbitrary input keys to an environment
-// variable to lookup. This is done by converting all characters to upper case
-// and replacing any hyphens with underscores.
+// variable to lookup. This is done by converting all characters to upper case.
 func DefaultEnvironmentVariableKeyTranslator(b byte) byte {
-	switch b {
-	case '-':
-		return '_'
-	default:
-		return byte(unicode.ToUpper(rune(b)))
-	}
+	return byte(unicode.ToUpper(rune(b)))
 }
 
 func toEnvironmentVariable(keys []string, translator KeyTranslator) string {
