@@ -15,6 +15,21 @@ const defaultDelim = "."
 // to separate on "." characters.
 var Delim = defaultDelim
 
+// A KeyTranslator is used for translating portions of config keys in a
+// level-agnostic manner.
+//
+// Functions like these may be useful for performing operations such as
+// normalizing hyphens ('-') to underscores ('_') when performing environment
+// variable lookups, or perhaps the inverse when performing command line flag
+// lookups.
+type KeyTranslator func(b byte) byte
+
+// The NoOpKeyTranslator is a KeyTranslator which returns all input bytes
+// unmodified.
+func NoOpKeyTranslator(b byte) byte {
+	return b
+}
+
 // ConfigLevel is a type alias used to identify various configuration levels
 type ConfigLevel int
 
