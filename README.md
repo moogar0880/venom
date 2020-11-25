@@ -108,24 +108,86 @@ uppercase strings with words that are separated by an underscore ("_")
 character.
 
 ```go
-os.Setenv("LOG_LEVEL", "INFO")
+package main
 
-fmt.Println(venom.Get("log.level"))  // Output: "INFO"
+import (
+    "fmt"
+    "os"
+
+    "github.com/moogar0880/venom"
+)
+
+func main() {
+    os.Setenv("LOG_LEVEL", "INFO")
+
+    fmt.Println(venom.Get("log.level"))  // Output: "INFO"
+}
 ```
 
 To specify a custom environment variable prefix, you can simply create and 
 register a new `EnvironmentVariableResolver`.
 
 ```go
-envVarResolver := &venom.EnvironmentVariableResolver{
-    Prefix: "MYSERVICE",
+package main
+
+import (
+    "fmt"
+    "os"
+
+    "github.com/moogar0880/venom"
+)
+
+func main() {
+    envVarResolver := &venom.EnvironmentVariableResolver{
+        Prefix: "MYSERVICE",
+    }
+
+    venom.RegisterResolver(venom.EnvironmentLevel, envVarResolver)
+
+    os.Setenv("LOG_LEVEL", "IGNORED")
+    os.Setenv("MYSERVICE_LOG_LEVEL", "INFO")
+
+    fmt.Println(venom.Get("log.level"))  // Output: "INFO"
 }
+```
 
-venom.RegisterResolver(venom.EnvironmentLevel, envVarResolver)
+To perform specific character mapping translations for environment variables
+you can provide a custom `KeyTranslator` to an `EnvironmentVariableResolver`.
 
-os.Setenv("MYSERVICE_LOG_LEVEL", "INFO")
+```go
+package main
 
-fmt.Println(venom.Get("log.level"))  // Output: "INFO"
+import (
+    "fmt"
+    "os"
+    "unicode"
+
+    "github.com/moogar0880/venom"
+)
+
+func main() {
+    envVarResolver := &venom.EnvironmentVariableResolver{
+        // Provide a custom KeyTranslator to an EnvironmentVariableResolver
+        Translator: func(b byte) byte {
+            switch b {
+            case '-':
+                // Convert all hypens to underscores.
+                return '_'
+            default:
+                // And otherwise translate all other characters to their
+                // uppercase equivalents.
+                return byte(unicode.ToUpper(rune(b)))
+            }
+        },
+    }
+
+    venom.RegisterResolver(venom.EnvironmentLevel, envVarResolver)
+
+    os.Setenv("LOG_LEVEL", "IGNORED")
+    os.Setenv("MYSERVICE_LOG_LEVEL", "INFO")
+
+    fmt.Println(venom.Get("log.level"))  // Output: "INFO"
+}
 ```
 
 ### Flags

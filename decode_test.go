@@ -1349,3 +1349,25 @@ func TestUnmarshal_Hyper(t *testing.T) {
 	assert.Equal(t, []int{443}, inp.Ports)
 	assert.Equal(t, "/some/path", inp.Dir)
 }
+
+func TestUnmarshal_KeyWithHyphens(t *testing.T) {
+	type S3Config struct {
+		AccessKeyID string `venom:"access-key-id"`
+	}
+
+	type Config struct {
+		S3 S3Config `venom:"s3"`
+	}
+
+	v := New()
+	v.RegisterResolver(EnvironmentLevel, &EnvironmentVariableResolver{
+		Prefix: "",
+	})
+	_ = os.Setenv("S3_ACCESS_KEY_ID", "FOOBAR")
+
+	var config Config
+	err := Unmarshal(v, &config)
+
+	assert.Nil(t, err, "unmarshal failed with error: %s", err)
+	assert.Equal(t, config.S3.AccessKeyID, "FOOBAR")
+}
