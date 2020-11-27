@@ -1,6 +1,16 @@
 ###############################################################################
 ### Reusable template definitions
 ###############################################################################
+.go_1_11_container: &go_1_11_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.11
+
+.go_1_12_container: &go_1_12_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.12
+
 .go_1_13_container: &go_1_13_container
   docker:
     # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
@@ -72,6 +82,7 @@
   environment:
     TEST_RESULTS: /tmp/test-results # path to where test results will be saved
     LINT_RESULTS: /tmp/lint-results # path to where lint results will be saved
+    GO111MODULE: "on"
 
 version: 2
 
@@ -79,6 +90,33 @@ version: 2
 ### Job Definitions
 ###############################################################################
 jobs:
+  #############################################################################
+  ### Go 1.11 Jobs
+  #############################################################################
+  test.1.11:
+    <<: *go_1_11_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.11:
+    <<: *go_1_11_container
+    <<: *common
+    <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.12 Jobs
+  #############################################################################
+  test.1.12:
+    <<: *go_1_12_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.12:
+    <<: *go_1_12_container
+    <<: *common
+    <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.13 Jobs
+  #############################################################################
   test.1.13:
     <<: *go_1_13_container
     <<: *common
@@ -87,6 +125,10 @@ jobs:
     <<: *go_1_13_container
     <<: *common
     <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.14 Jobs
+  #############################################################################
   test.1.14:
     <<: *go_1_14_container
     <<: *common
@@ -95,6 +137,10 @@ jobs:
     <<: *go_1_14_container
     <<: *common
     <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.15 Jobs
+  #############################################################################
   test.1.15:
     <<: *go_1_15_container
     <<: *common
@@ -106,6 +152,16 @@ jobs:
 
 workflows:
   version: 2
+
+  go-1.11-verify:
+    jobs:
+      - test.1.11
+      - lint.1.11
+
+  go-1.12-verify:
+    jobs:
+      - test.1.12
+      - lint.1.12
 
   go-1.13-verify:
     jobs:
