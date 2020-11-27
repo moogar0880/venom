@@ -1,0 +1,179 @@
+###############################################################################
+### Reusable template definitions
+###############################################################################
+.go_1_11_container: &go_1_11_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.11
+
+.go_1_12_container: &go_1_12_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.12
+
+.go_1_13_container: &go_1_13_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.13
+
+.go_1_14_container: &go_1_14_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.14
+
+.go_1_15_container: &go_1_15_container
+  docker:
+    # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+    - image: circleci/golang:1.15
+
+.restore_go_pkg_cache: &restore_go_pkg_cache
+  # Restores saved cache if no changes are detected since last run.
+  - restore_cache:
+      keys:
+        - go-mod-v4-{{ checksum "go.sum" }}
+
+.save_go_pkg_cache: &save_go_pkg_cache
+  # Save the current package cache to speed up subsequent builds.
+  - save_cache:
+      key: go-mod-v4-{{ checksum "go.sum" }}
+      paths:
+        - "/go/pkg/mod"
+
+.gotest: &gotest
+  run:
+    name: Run unit tests
+    command: make test
+
+.golinter: &golinter
+  - run:
+      name: Run the linter
+      command: make lint
+
+.gotest_steps: &gotest_steps
+  steps:
+    - checkout
+    - <<: *restore_go_pkg_cache
+    - <<: *gotest
+    - <<: *save_go_pkg_cache
+    - store_artifacts: # upload test summary for display in Artifacts
+        path: ${TEST_RESULTS}
+        destination: raw-test-output
+    - store_test_results: # upload test results for display in Test Summary
+        path: /tmp/test-results
+
+.golint_steps: &golint_steps
+  steps:
+    - checkout
+    - <<: *restore_go_pkg_cache
+    - <<: *golinter
+    - <<: *save_go_pkg_cache
+    - store_artifacts: # upload lint summary for display in Artifacts
+        path: ${LINT_RESULTS}
+        destination: raw-lint-output
+
+.common: &common
+  # Run multiple jobs in parallel.
+  parallelism: 2
+
+  # Declare the working directory for the job.
+  working_directory: /go/src/github.com/moogar0880/venom
+
+  # Define the environment variables to be injected into the build itself.
+  environment:
+    TEST_RESULTS: /tmp/test-results # path to where test results will be saved
+    LINT_RESULTS: /tmp/lint-results # path to where lint results will be saved
+    GO111MODULE: "on"
+
+version: 2
+
+###############################################################################
+### Job Definitions
+###############################################################################
+jobs:
+  #############################################################################
+  ### Go 1.11 Jobs
+  #############################################################################
+  test.1.11:
+    <<: *go_1_11_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.11:
+    <<: *go_1_11_container
+    <<: *common
+    <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.12 Jobs
+  #############################################################################
+  test.1.12:
+    <<: *go_1_12_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.12:
+    <<: *go_1_12_container
+    <<: *common
+    <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.13 Jobs
+  #############################################################################
+  test.1.13:
+    <<: *go_1_13_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.13:
+    <<: *go_1_13_container
+    <<: *common
+    <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.14 Jobs
+  #############################################################################
+  test.1.14:
+    <<: *go_1_14_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.14:
+    <<: *go_1_14_container
+    <<: *common
+    <<: *golint_steps
+
+  #############################################################################
+  ### Go 1.15 Jobs
+  #############################################################################
+  test.1.15:
+    <<: *go_1_15_container
+    <<: *common
+    <<: *gotest_steps
+  lint.1.15:
+    <<: *go_1_15_container
+    <<: *common
+    <<: *golint_steps
+
+workflows:
+  version: 2
+
+  go-1.11-verify:
+    jobs:
+      - test.1.11
+      - lint.1.11
+
+  go-1.12-verify:
+    jobs:
+      - test.1.12
+      - lint.1.12
+
+  go-1.13-verify:
+    jobs:
+      - test.1.13
+      - lint.1.13
+
+  go-1.14-verify:
+    jobs:
+      - test.1.14
+      - lint.1.14
+
+  go-1.15-verify:
+    jobs:
+      - test.1.15
+      - lint.1.15
