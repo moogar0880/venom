@@ -1,3 +1,7 @@
+# TEST_RESULTS defines the directory to which test results will be saved.
+TEST_RESULTS=
+LINT_RESULTS=
+
 .PHONY: gogen
 gogen:
 	@go run generate_coercers.go
@@ -5,11 +9,21 @@ gogen:
 
 .PHONY: lint
 lint:
+ifeq ($(strip $(TEST_RESULTS)),)
 	gofmt -d -l -s *.go
+else
+	mkdir -p $(LINT_RESULTS)
+	gofmt -d -l -s *.go > $(LINT_RESULTS)/linter.out
+endif
 
 .PHONY: test
 test:
-	go test -coverprofile=coverage.out
+ifeq ($(strip $(TEST_RESULTS)),)
+	go test -v -coverprofile=coverage.out
+else
+	mkdir -p $(TEST_RESULTS)
+	gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- $(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
+endif
 
 .PHONY: test/benchmark
 test/benchmark:
