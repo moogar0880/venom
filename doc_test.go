@@ -63,7 +63,7 @@ func ExampleFind() {
 func ExampleGet() {
 	venom.SetDefault("log.level", "INFO")
 	fmt.Printf("%v\n", venom.Get("log"))
-	fmt.Printf("%v\n", venom.Get("log.level")) // Output: INFO
+	fmt.Printf("%v\n", venom.Get("log.level"))
 	// Output: map[level:INFO]
 	// INFO
 }
