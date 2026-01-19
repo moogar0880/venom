@@ -1,6 +1,6 @@
 package venom
 
-// Default the default set of available config levels
+// Default the default set of available config levels.
 const (
 	DefaultLevel ConfigLevel = iota
 	FileLevel
@@ -30,11 +30,11 @@ func NoOpKeyTranslator(b byte) byte {
 	return b
 }
 
-// ConfigLevel is a type alias used to identify various configuration levels
+// ConfigLevel is a type alias used to identify various configuration levels.
 type ConfigLevel int
 
 // ConfigMap defines the inner map type which holds actual config data. These
-// are nested under a ConfigLevel which determines their priority
+// are nested under a ConfigLevel which determines their priority.
 type ConfigMap map[string]interface{}
 
 func (c ConfigMap) merge(d ConfigMap) ConfigMap {
@@ -75,7 +75,7 @@ func mapInterfaceInterfaceToStrInterface(src map[interface{}]interface{}) map[st
 }
 
 // ConfigLevelMap is a mapping of config levels to the maps which contain
-// various configuration values at those levels
+// various configuration values at those levels.
 type ConfigLevelMap map[ConfigLevel]ConfigMap
 
 // Venom is the configuration registry responsible for storing and managing
@@ -101,7 +101,7 @@ func NewSafe() *Venom {
 	return NewWithStore(NewSafeConfigStore())
 }
 
-// NewLoggable takes a Logger and returns a newly initialized Venom
+// NewLoggableWith takes a Logger and returns a newly initialized Venom
 // instance that will log to a Logger interface upon reads and writes.
 func NewLoggableWith(l Logger) *Venom {
 	lcs := NewLoggableConfigStoreWith(l)
@@ -129,7 +129,7 @@ func Default() *Venom {
 	return ven
 }
 
-// Default returns a new goroutine-safe venom instance with some default
+// DefaultSafe returns a new goroutine-safe venom instance with some default
 // resolver configuration applied to it.
 func DefaultSafe() *Venom {
 	ven := NewSafe()
@@ -179,7 +179,7 @@ func (v *Venom) Get(key string) interface{} {
 }
 
 // Find searches for the given key, returning the discovered value and a
-// boolean indicating whether or not the key was found
+// boolean indicating whether the key was found.
 func (v *Venom) Find(key string) (interface{}, bool) {
 	return v.Store.Find(key)
 }
@@ -191,7 +191,7 @@ func (v *Venom) Merge(l ConfigLevel, data ConfigMap) {
 }
 
 // Clear removes all data from the ConfigLevelMap and resets the heap of config
-// levels
+// levels.
 func (v *Venom) Clear() {
 	v.Store.Clear()
 }
