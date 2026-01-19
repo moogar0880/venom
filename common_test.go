@@ -101,7 +101,7 @@ func testDebug(t *testing.T, v ConfigStore) {
 			tc:      "should debug empty config map",
 			configs: ConfigMap{},
 			expect: `{
-  "2": {}
+  "20": {}
 }`,
 		},
 		{
@@ -113,7 +113,7 @@ func testDebug(t *testing.T, v ConfigStore) {
 				},
 			},
 			expect: `{
-  "2": {
+  "20": {
     "baz": {
       "bar": "foo"
     },

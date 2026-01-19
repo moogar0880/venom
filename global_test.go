@@ -132,7 +132,7 @@ func TestGlobalDebug(t *testing.T) {
 				},
 			},
 			expect: `{
-  "2": {
+  "20": {
     "baz": {
       "bar": "foo"
     },

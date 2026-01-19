@@ -2,11 +2,11 @@ package venom
 
 // Default the default set of available config levels.
 const (
-	DefaultLevel ConfigLevel = iota
-	FileLevel
-	EnvironmentLevel
-	FlagLevel
-	OverrideLevel ConfigLevel = 99
+	DefaultLevel     ConfigLevel = iota
+	FileLevel                    = DefaultLevel + 10
+	EnvironmentLevel             = FileLevel + 10
+	FlagLevel                    = EnvironmentLevel + 10
+	OverrideLevel    ConfigLevel = 99
 )
 
 const defaultDelim = "."
