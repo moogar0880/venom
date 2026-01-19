@@ -3,19 +3,15 @@
 A pluggable hierarchical configuration management library with zero
 dependencies, for golang.
 
-[![Build Status](https://circleci.com/gh/moogar0880/venom.svg?style=shield)](https://circleci.com/gh/moogar0880/venom)
+![Tests](https://github.com/moogar0880/venom/actions/workflows/test.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moogar0880/venom)](https://goreportcard.com/report/github.com/moogar0880/venom)
 [![GoDoc](https://godoc.org/github.com/moogar0880/venom?status.svg)](https://godoc.org/github.com/moogar0880/venom)
 
 ## Install
 
-With dep:
-
-`dep ensure -add github.com/moogar0880/venom`
-
-Or with go get:
-
-`go get github.com/moogar0880/venom`
+```
+go get github.com/moogar0880/venom
+```
 
 ## Why Venom?
 
@@ -24,20 +20,20 @@ management library. It exposes as many aspects as the standard lib will
 reasonably support, such as:
 
 1. Explicitly set defaults or overrides.
-1. Find and load JSON config files.
-1. Load configuration files from a directory, with the option to recursively
-   load configs from sub-directories.
-1. Load configs from environment variables.
-1. Load command line arguments using the `flags` library.
+2. Find and load JSON config files.
+3. Load configuration files from a directory, with the option to recursively
+   load configs from subdirectories.
+4. Load configs from environment variables.
+5. Load command line arguments using the `flags` library.
 
-These mechanisms are exposed in a completely extendible way which will allow 
+These mechanisms are exposed in a completely extendable way which will allow 
 you to easily perform the following actions:
 
 1. Specify your own config level precedence (eg, environment variables can be
    made to override command line arguments).
-1. Default behavior can be replaced with custom behavior by writing a custom
+2. Default behavior can be replaced with custom behavior by writing a custom
    `Resolver`.
-1. Custom config levels can be easily implemented by writing a custom `Resolver`.
+3. Custom config levels can be easily implemented by writing a custom `Resolver`.
 
 ## Loading Configs
 
@@ -64,7 +60,7 @@ venom.SetDefault("log", map[string]interface{
 ### Loading Configs From Files
 
 Venom allows you to specify custom file loaders for specific file types. By
-default the only implementation is the `JSONLoader` which loads any file with
+default, the only implementation is the `JSONLoader` which loads any file with
 an extension of `.json` using `json.Unmarshal`.
 
 If you wish to implement your own type of config file reader you need only to
@@ -103,7 +99,7 @@ Configuration values may be loaded from any set environment variables, which
 is enabled by default in the global venom instance and when creating a custom
 venom instance via `venom.Default()`. 
 
-**Note:** Environment variables are case sensitive and should be set as 
+**Note:** Environment variables are case-sensitive and should be set as 
 uppercase strings with words that are separated by an underscore ("_") 
 character.
 
@@ -171,7 +167,7 @@ func main() {
         Translator: func(b byte) byte {
             switch b {
             case '-':
-                // Convert all hypens to underscores.
+                // Convert all hyphens to underscores.
                 return '_'
             default:
                 // And otherwise translate all other characters to their
@@ -192,13 +188,13 @@ func main() {
 
 ### Flags
 
-By default commandline flags can be parsed using the standard lib `flag` 
+By default, commandline flags can be parsed using the standard lib `flag` 
 library. There are two different ways that you can approach loading command 
 line configs, and they both involve creating and registering a new 
 `FlagsetResolver` instance with Venom.
 
 **Note:** Venom will parse flags if they have not already been parsed, but 
-Venom will not attempt to re-parse an already parsed `FlagSet`.
+Venom will not attempt to reparse an already parsed `FlagSet`.
 
 #### Straight From os.Args
 
@@ -294,10 +290,10 @@ There are several ways to access config values from Venom:
 * `Get(key string) interface{}`
 * `Find(key string) (interface{}, bool)`
 
-If you're unsure whether or not a config value has been set, `Find` will return
-an optional boolean value indicating whether or not the value has been 
-specified. Otherwise, `Get` will return `nil` in the event that a config has not
-been specified.
+If you're unsure whether a config value has been set, `Find` will return an
+optional boolean value indicating whether the value has been specified. 
+Otherwise, `Get` will return `nil` in the event that a config has not been 
+specified.
 
 ## Key Management
 
