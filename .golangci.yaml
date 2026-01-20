@@ -1,13 +1,6 @@
 # See the dedicated "version" documentation section.
 version: "2"
 linters:
-  # Default set of linters.
-  # The value can be:
-  # - `standard`: https://golangci-lint.run/docs/linters/#enabled-by-default
-  # - `all`: enables all linters by default.
-  # - `none`: disables all linters by default.
-  # - `fast`: enables only linters considered as "fast" (`golangci-lint help linters --json | jq '[ .[] | select(.fast==true) ] | map(.name)'`).
-  # Default: standard
   default: all
   disable:
     - cyclop
@@ -56,20 +49,3 @@ linters:
         - any
         - rangeint
         - reflecttypefor
-#formatters:
-#  # See the dedicated "formatters" documentation section.
-#  option: value
-#issues:
-#  # See the dedicated "issues" documentation section.
-#  option: value
-## Output configuration options.
-#output:
-#  # See the dedicated "output" documentation section.
-#  option: value
-## Options for analysis running.
-#run:
-#  # See the dedicated "run" documentation section.
-#  option: value
-#severity:
-#  # See the dedicated "severity" documentation section.
-#  option: value
