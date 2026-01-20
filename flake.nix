@@ -24,7 +24,14 @@
             buildInputs = with pkgs; [
                 gnumake
                 go
+                golangci-lint
             ];
+
+            shellHook = ''
+              echo "Entering a new go devshell"
+              echo "Go version: $(${lib.getExe pkgs.go} version)"
+              echo "golangci-lint version: $(${lib.getExe pkgs.golangci-lint} --version)"
+            '';
           };
         };
     };
