@@ -8,6 +8,8 @@ import (
 )
 
 func TestSubscriptionStore_Subscribe(t *testing.T) {
+	t.Parallel()
+
 	testIO := []struct {
 		name         string
 		init         func(ven *Venom)
@@ -70,10 +72,12 @@ func TestSubscriptionStore_Subscribe(t *testing.T) {
 
 	for _, test := range testIO {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			// create our subscription store and ensure we clean it up when the
 			// test case has completed
-			store, clear := NewSubscriptionStore(NewDefaultConfigStore())
-			defer clear()
+			store, fn := NewSubscriptionStore(NewDefaultConfigStore())
+			defer fn()
 
 			// create a venom instance that wraps the new store, then
 			// initialize it specifically for this test case and subscribe to
@@ -85,9 +89,11 @@ func TestSubscriptionStore_Subscribe(t *testing.T) {
 			// subscribe to changes on our unbuffered channel before attempting
 			// to write updates to it
 			done := make(chan bool, 1)
+
 			go func() {
 				for i, expect := range test.expect {
 					assert.Equal(t, expect, <-events)
+
 					if i == len(test.expect)-1 {
 						done <- true
 					}
@@ -112,7 +118,7 @@ func TestSubscriptionStore_Subscribe(t *testing.T) {
 
 			// ensure that we can properly unsubscribe from our key-space once
 			// we're done testing it
-			assert.Nil(t, store.Unsubscribe(test.subscribeKey))
+			assert.NoError(t, store.Unsubscribe(test.subscribeKey))
 		})
 	}
 }

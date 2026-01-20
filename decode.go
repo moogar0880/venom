@@ -3,13 +3,14 @@ package venom
 //go:generate go run generate_coercers.go
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 )
 
 const tag = "venom"
 
-// Unmarshal unmarshals the provided Venom config into the provided interface
+// Unmarshal unmarshals the provided Venom config into the provided interface.
 func Unmarshal(data *Venom, dst interface{}) error {
 	// default to the global venom config if the provided Venom is nil
 	if data == nil {
@@ -18,12 +19,14 @@ func Unmarshal(data *Venom, dst interface{}) error {
 
 	var d decoder
 	d.init(data)
+
 	return d.unmarshal(dst)
 }
 
-// InvalidUnmarshalError is an error returned when an an invalid destination
-// value is provided to Unmarshal.
-// (The argument to Unmarshal must be a non-nil pointer.)
+// InvalidUnmarshalError is an error returned when an invalid destination value
+// is provided to Unmarshal.
+//
+// Note that the argument to Unmarshal must be a non-nil pointer.
 type InvalidUnmarshalError struct {
 	Type reflect.Type
 }
@@ -36,6 +39,7 @@ func (e InvalidUnmarshalError) Error() string {
 	if e.Type.Kind() != reflect.Ptr {
 		return "venom: can not Unmarshal(non-pointer " + e.Type.String() + ")"
 	}
+
 	return "venom: can not Unmarshal(nil " + e.Type.String() + ")"
 }
 
@@ -68,6 +72,7 @@ func (d *decoder) init(data *Venom) *decoder {
 	d.ns = &namespace{
 		namespaces: make([]string, 0),
 	}
+
 	return d
 }
 
@@ -76,6 +81,7 @@ func (d *decoder) unmarshal(dst interface{}) error {
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return &InvalidUnmarshalError{reflect.TypeOf(dst)}
 	}
+
 	return d.value(rv)
 }
 
@@ -124,11 +130,12 @@ func (d *decoder) value(val reflect.Value) error {
 		// reset the namespace before iterating to the next field
 		d.ns.pop()
 	}
+
 	return nil
 }
 
 // coerce converts the provided query parameter slice into the proper type for
-// the target field. this coerced value is then assigned to the current field
+// the target field. this coerced value is then assigned to the current field.
 func (d *decoder) coerce(val interface{}, to reflect.Kind, field reflect.Value) error {
 	var err error
 
@@ -239,15 +246,18 @@ func (d *decoder) coerce(val interface{}, to reflect.Kind, field reflect.Value) 
 		err = d.value(field)
 	case reflect.Slice:
 		err = d.coerceSlice(val, to, field)
+	default:
+		return fmt.Errorf("failed to coerce into type %s", to)
 	}
+
 	return err
 }
 
 // coerceSlice creates a new slice of the appropriate type for the target field
 // and coerces each of the query parameter values into the destination type.
 // Should any of the provided query parameters fail to be coerced, an error is
-// returned and the entire slice will not be applied
-func (d *decoder) coerceSlice(val interface{}, to reflect.Kind, field reflect.Value) error {
+// returned and the entire slice will not be applied.
+func (d *decoder) coerceSlice(val interface{}, _ reflect.Kind, field reflect.Value) error {
 	var err error
 	sliceType := field.Type().Elem()
 	coerceKind := sliceType.Kind()
@@ -382,7 +392,10 @@ func (d *decoder) coerceSlice(val interface{}, to reflect.Kind, field reflect.Va
 				return err
 			}
 		}
+	default:
+		return fmt.Errorf("failed to coerce into slice of type %s", coerceKind)
 	}
+
 	return err
 }
 

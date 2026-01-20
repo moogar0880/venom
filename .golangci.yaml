@@ -1,0 +1,75 @@
+# See the dedicated "version" documentation section.
+version: "2"
+linters:
+  # Default set of linters.
+  # The value can be:
+  # - `standard`: https://golangci-lint.run/docs/linters/#enabled-by-default
+  # - `all`: enables all linters by default.
+  # - `none`: disables all linters by default.
+  # - `fast`: enables only linters considered as "fast" (`golangci-lint help linters --json | jq '[ .[] | select(.fast==true) ] | map(.name)'`).
+  # Default: standard
+  default: all
+  disable:
+    - cyclop
+    - dupl
+    - err113
+    - errchkjson
+    - errname
+    - exhaustive
+    - exhaustruct
+    - funlen
+    - funcorder
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - gocyclo
+    - godoclint
+    - inamedparam
+    - intrange
+    - ireturn
+    - maintidx
+    - nlreturn
+    - noinlineerr
+    - nonamedreturns
+    - paralleltest
+    - revive
+    - testpackage
+    - tparallel
+    - varnamelen
+    - wrapcheck
+    - wsl
+    - wsl_v5
+  settings:
+    depguard:
+      rules:
+        main:
+          # List of allowed packages.
+          # Entries can be a variable (starting with $), a string prefix, or an exact match (if ending with $).
+          # Default: []
+          allow:
+            - $gostd
+            - github.com/stretchr/testify
+            - github.com/moogar0880/venom
+          deny: []
+    modernize:
+      disable:
+        - any
+        - rangeint
+        - reflecttypefor
+#formatters:
+#  # See the dedicated "formatters" documentation section.
+#  option: value
+#issues:
+#  # See the dedicated "issues" documentation section.
+#  option: value
+## Output configuration options.
+#output:
+#  # See the dedicated "output" documentation section.
+#  option: value
+## Options for analysis running.
+#run:
+#  # See the dedicated "run" documentation section.
+#  option: value
+#severity:
+#  # See the dedicated "severity" documentation section.
+#  option: value

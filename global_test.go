@@ -1,10 +1,11 @@
 package venom
 
 import (
-	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGlobalVenom(t *testing.T) {
@@ -65,22 +66,21 @@ func TestGlobalVenom(t *testing.T) {
 	}
 
 	for i, test := range testIO {
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			// reset the global venom instance for each test run
 			v = Default()
 
 			for _, inp := range test.inp {
-				switch inp.l {
-				case DefaultLevel:
+				if inp.l == DefaultLevel {
 					SetDefault(inp.k, inp.v)
-				case OverrideLevel:
+				} else {
 					SetOverride(inp.k, inp.v)
 				}
 			}
 
 			for _, expect := range test.expected {
 				if !assert.Equal(t, expect.v, Get(expect.k)) {
-					fmt.Println(Debug())
+					t.Log(Debug())
 				}
 
 				_, exists := Find(expect.k)
@@ -93,7 +93,8 @@ func TestGlobalVenom(t *testing.T) {
 
 			// clear the instance and assert that it's empty
 			Clear()
-			st := v.Store.(*DefaultConfigStore)
+			st, ok := v.Store.(*DefaultConfigStore)
+			require.True(t, ok)
 			assert.Empty(t, st.config)
 		})
 	}
@@ -104,8 +105,8 @@ func TestGlobalLoadFile(t *testing.T) {
 	err := LoadFile("testdata/config.json")
 	assertEqualErrors(t, nil, err)
 
-	assert.Equal(t, v.Get("foo"), "bar")
-	assert.Equal(t, v.Get("level"), 5.0)
+	assert.Equal(t, "bar", v.Get("foo"))
+	assert.InEpsilon(t, 5.0, v.Get("level"), 0.0)
 }
 
 func TestGlobalLoadDirectory(t *testing.T) {
@@ -113,8 +114,8 @@ func TestGlobalLoadDirectory(t *testing.T) {
 	err := LoadDirectory("testdata/sub", false)
 	assertEqualErrors(t, nil, err)
 
-	assert.Equal(t, v.Get("foo"), "bar")
-	assert.Equal(t, v.Get("level"), 5.0)
+	assert.Equal(t, "bar", v.Get("foo"))
+	assert.InEpsilon(t, 5.0, v.Get("level"), 0.0)
 }
 
 func TestGlobalDebug(t *testing.T) {
@@ -145,7 +146,8 @@ func TestGlobalDebug(t *testing.T) {
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
 			v = New()
-			st := v.Store.(*DefaultConfigStore)
+			st, ok := v.Store.(*DefaultConfigStore)
+			require.True(t, ok)
 			st.config[EnvironmentLevel] = test.configs
 
 			actual := Debug()
@@ -172,6 +174,7 @@ func TestGlobalAlias(t *testing.T) {
 	for _, test := range testIO {
 		t.Run(test.tc, func(t *testing.T) {
 			defer v.Clear()
+
 			SetLevel(DefaultLevel, test.key, test.value)
 			Alias(test.alias, test.key)
 
@@ -186,6 +189,7 @@ func TestGlobalAlias(t *testing.T) {
 
 func TestGlobalRegisterResolver(t *testing.T) {
 	v.RegisterResolver(EnvironmentLevel, defaultEnvResolver)
-	st := v.Store.(*DefaultConfigStore)
+	st, ok := v.Store.(*DefaultConfigStore)
+	require.True(t, ok)
 	assert.Contains(t, st.resolvers, EnvironmentLevel)
 }

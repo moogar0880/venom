@@ -28,7 +28,7 @@ func TestNewLoggableWith(t *testing.T) {
 		t.Run(test.tc, func(t *testing.T) {
 			lw := NewStoreLogger(test.lgr)
 			l := NewLoggableWith(lw)
-			assert.IsType(t, l, &Venom{})
+			assert.IsType(t, &Venom{}, l)
 		})
 	}
 }

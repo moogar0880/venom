@@ -56,7 +56,7 @@ func NewDefaultConfigStore() *DefaultConfigStore {
 // ConfigLevel.
 //
 // Additionally, if the provided level is not already in the current collection
-// of active config levels, it will be added automatically
+// of active config levels, it will be added automatically.
 func (s *DefaultConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
 	s.resolvers[level] = r
 	heap.Push(s.usedLevels, level)
@@ -80,7 +80,7 @@ func (s *DefaultConfigStore) SetLevel(level ConfigLevel, key string, value inter
 }
 
 // Find searches for the given key, returning the discovered value and a
-// boolean indicating whether or not the key was found
+// boolean indicating whether the key was found.
 func (s *DefaultConfigStore) Find(key string) (interface{}, bool) {
 	return s.find(key)
 }
@@ -109,12 +109,13 @@ func (s *DefaultConfigStore) setIfNotExists(l ConfigLevel, key string, value int
 }
 
 // setNested inserts the provided value into the nested keyspace as defined by
-// the delim separated keys
+// the delim separated keys.
 func setNested(config ConfigMap, keys []string, value interface{}) {
 	for index, key := range keys {
 		// if we're at the end of our slice of keys, set the value and return
 		if index == len(keys)-1 {
 			config[key] = value
+
 			return
 		}
 
@@ -123,7 +124,7 @@ func setNested(config ConfigMap, keys []string, value interface{}) {
 		if _, ok := config[key]; !ok {
 			config[key] = make(ConfigMap)
 		}
-		config = config[key].(ConfigMap)
+		config, _ = config[key].(ConfigMap)
 	}
 }
 
@@ -134,6 +135,7 @@ func (s *DefaultConfigStore) find(key string) (val interface{}, ok bool) {
 	}
 
 	keys := strings.Split(key, Delim)
+
 	for _, level := range *s.usedLevels {
 		resolver, resolverExists := s.resolvers[level]
 		if !resolverExists {
@@ -144,6 +146,7 @@ func (s *DefaultConfigStore) find(key string) (val interface{}, ok bool) {
 			return
 		}
 	}
+
 	return nil, false
 }
 
@@ -158,6 +161,7 @@ func (s *DefaultConfigStore) Clear() {
 // string.
 func (s *DefaultConfigStore) Debug() string {
 	b, _ := json.MarshalIndent(s.config, "", "  ")
+
 	return string(b)
 }
 
@@ -179,10 +183,11 @@ func NewSafeConfigStore() ConfigStore {
 // ConfigLevel.
 //
 // Additionally, if the provided level is not already in the current collection
-// of active config levels, it will be added automatically
+// of active config levels, it will be added automatically.
 func (s *SafeConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.c.RegisterResolver(level, r)
 }
 
@@ -192,6 +197,7 @@ func (s *SafeConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
 func (s *SafeConfigStore) SetLevel(level ConfigLevel, key string, value interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.c.SetLevel(level, key, value)
 }
 
@@ -200,6 +206,7 @@ func (s *SafeConfigStore) SetLevel(level ConfigLevel, key string, value interfac
 func (s *SafeConfigStore) Merge(l ConfigLevel, data ConfigMap) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.c.Merge(l, data)
 }
 
@@ -209,14 +216,16 @@ func (s *SafeConfigStore) Merge(l ConfigLevel, data ConfigMap) {
 func (s *SafeConfigStore) Alias(from, to string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.c.Alias(from, to)
 }
 
 // Find searches for the given key, returning the discovered value and a
-// boolean indicating whether or not the key was found
+// boolean indicating whether the key was found.
 func (s *SafeConfigStore) Find(key string) (interface{}, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	return s.c.Find(key)
 }
 
@@ -225,6 +234,7 @@ func (s *SafeConfigStore) Find(key string) (interface{}, bool) {
 func (s *SafeConfigStore) Clear() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.c.Clear()
 }
 
@@ -233,6 +243,7 @@ func (s *SafeConfigStore) Clear() {
 func (s *SafeConfigStore) Debug() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	return s.c.Debug()
 }
 
@@ -240,6 +251,7 @@ func (s *SafeConfigStore) Debug() string {
 func (s *SafeConfigStore) Size() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	return s.c.Size()
 }
 
@@ -250,7 +262,7 @@ type LoggableConfigStore struct {
 	log Logger
 }
 
-// NewLoggableConfigStore takes a Logger and returns a new ConfigStore
+// NewLoggableConfigStoreWith takes a Logger and returns a new ConfigStore
 // with said interface as the logging mechanism used for read and writes.
 func NewLoggableConfigStoreWith(l Logger) ConfigStore {
 	return &LoggableConfigStore{
@@ -263,6 +275,7 @@ func NewLoggableConfigStoreWith(l Logger) ConfigStore {
 // set to write to os.Stdout.
 func NewLoggableConfigStore() ConfigStore {
 	l := NewStoreLogger(log.New(os.Stdout, "", 0))
+
 	return NewLoggableConfigStoreWith(l)
 }
 
@@ -270,7 +283,7 @@ func NewLoggableConfigStore() ConfigStore {
 // ConfigLevel.
 //
 // Additionally, if the provided level is not already in the current collection
-// of active config levels, it will be added automatically
+// of active config levels, it will be added automatically.
 func (l *LoggableConfigStore) RegisterResolver(level ConfigLevel, r Resolver) {
 	l.c.RegisterResolver(level, r)
 }
@@ -297,10 +310,11 @@ func (l *LoggableConfigStore) Alias(from, to string) {
 }
 
 // Find searches for the given key, returning the discovered value and a
-// boolean indicating whether or not the key was found
+// boolean indicating whether the key was found.
 func (l *LoggableConfigStore) Find(key string) (interface{}, bool) {
 	a, b := l.c.Find(key)
 	l.log.LogRead(key, a, b)
+
 	return a, b
 }
 

@@ -45,6 +45,7 @@ func NewSubscriptionStoreWithSize(s ConfigStore, size int) (*SubscriptionStore, 
 		store:    s,
 		bufSize:  size,
 	}
+
 	return store, store.Close
 }
 
@@ -52,7 +53,7 @@ func NewSubscriptionStoreWithSize(s ConfigStore, size int) (*SubscriptionStore, 
 // ConfigLevel.
 //
 // Additionally, if the provided level is not already in the current collection
-// of active config levels, it will be added automatically
+// of active config levels, it will be added automatically.
 func (s *SubscriptionStore) RegisterResolver(level ConfigLevel, r Resolver) {
 	s.store.RegisterResolver(level, r)
 }
@@ -82,7 +83,7 @@ func (s *SubscriptionStore) Alias(from, to string) {
 }
 
 // Find searches for the given key, returning the discovered value and a
-// boolean indicating whether or not the key was found.
+// boolean indicating whether the key was found.
 func (s *SubscriptionStore) Find(key string) (interface{}, bool) {
 	return s.store.Find(key)
 }
@@ -137,6 +138,7 @@ func (s *SubscriptionStore) Subscribe(key string) <-chan Event {
 		newChan = make(chan Event, s.bufSize)
 	}
 	s.channels[key] = newChan
+
 	return s.channels[key]
 }
 
@@ -151,6 +153,7 @@ func (s *SubscriptionStore) Unsubscribe(key string) error {
 	if channel, ok := s.channels[key]; ok {
 		close(channel)
 		delete(s.channels, key)
+
 		return nil
 	}
 

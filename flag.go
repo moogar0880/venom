@@ -30,7 +30,7 @@ type FlagsetResolver struct {
 	cachedValueMap map[string]string
 }
 
-// parse will parse the specified flagset if it has not already been parsed
+// parse will parse the specified flagset if it has not already been parsed.
 func (r *FlagsetResolver) parse() error {
 	// Ensure we cache the set of flags that were specified after parsing the
 	// values on the commandline.
@@ -46,6 +46,7 @@ func (r *FlagsetResolver) parse() error {
 			return nil
 		}
 		flag.Parse()
+
 		return nil
 	}
 
@@ -59,6 +60,7 @@ func (r *FlagsetResolver) parse() error {
 	if r.Arguments == nil {
 		return r.Flags.Parse(os.Args[1:])
 	}
+
 	return r.Flags.Parse(r.Arguments)
 }
 
@@ -86,7 +88,7 @@ func (r *FlagsetResolver) cacheFlagValues() {
 }
 
 // Resolve is a Resolver function and will lookup the requested config value
-// from a FlagSet
+// from a FlagSet.
 func (r *FlagsetResolver) Resolve(keys []string, _ ConfigMap) (val interface{}, ok bool) {
 	// bail early if we fail to parse any of the provided flags
 	if err := r.parse(); err != nil {
@@ -99,5 +101,6 @@ func (r *FlagsetResolver) Resolve(keys []string, _ ConfigMap) (val interface{}, 
 	if value, ok := r.cachedValueMap[strings.Join(keys, FlagSeparator)]; ok {
 		return value, ok
 	}
+
 	return nil, false
 }

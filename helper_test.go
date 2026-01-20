@@ -1,26 +1,26 @@
 package venom
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// TestLogger has no-op ReadLog WriteLog methods
+// TestLogger has no-op ReadLog WriteLog methods.
 type TestLogger struct{}
 
-func (tl *TestLogger) LogWrite(level ConfigLevel, key string, val interface{}) {}
-func (tl *TestLogger) LogRead(key string, val interface{}, bl bool)            {}
+func (tl *TestLogger) LogWrite(_ ConfigLevel, _ string, _ interface{}) {}
+func (tl *TestLogger) LogRead(_ string, _ interface{}, _ bool)         {}
 
-// kv is a test struct containing a (k)ey and a (v)alue
+// kv is a test struct containing a (k)ey and a (v)alue.
 type kv struct {
 	k string
 	v interface{}
 }
 
-// lkv is a test struct containing a config (l)evel, a (k)ey, and a (v)alue
+// lkv is a test struct containing a config (l)evel, a (k)ey, and a (v)alue.
 type lkv struct {
 	l ConfigLevel
 	k string
@@ -28,6 +28,8 @@ type lkv struct {
 }
 
 func assertEqualErrors(t *testing.T, expect, actual error) {
+	t.Helper()
+
 	var msg string
 	if actual != nil {
 		msg = actual.Error()
@@ -45,6 +47,7 @@ func redirectStdout(test struct {
 }) string {
 	// make pipe to stdout and defer resetting
 	realStdout := os.Stdout
+
 	defer func() { os.Stdout = realStdout }()
 	r, fakeStdout, _ := os.Pipe()
 	os.Stdout = fakeStdout
@@ -54,8 +57,8 @@ func redirectStdout(test struct {
 	l.SetDefault(test.kv.k, test.kv.v)
 
 	// close up pipe, return string, exec defer
-	fakeStdout.Close()
-	newOutBytes, _ := ioutil.ReadAll(r)
-	r.Close()
+	_ = fakeStdout.Close()
+	newOutBytes, _ := io.ReadAll(r)
+	_ = r.Close()
 	return string(newOutBytes)
 }

@@ -1,13 +1,15 @@
 package venom
 
 import (
-	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func testVenom(t *testing.T, v ConfigStore) {
+	t.Helper()
+
 	testIO := []struct {
 		inp      []lkv
 		expected []kv
@@ -65,7 +67,7 @@ func testVenom(t *testing.T, v ConfigStore) {
 	}
 
 	for i, test := range testIO {
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			for _, inp := range test.inp {
 				v.SetLevel(inp.l, inp.k, inp.v)
 			}
@@ -73,7 +75,7 @@ func testVenom(t *testing.T, v ConfigStore) {
 			for _, expect := range test.expected {
 				val, _ := v.Find(expect.k)
 				if !assert.Equal(t, expect.v, val) {
-					fmt.Println(v.Debug())
+					t.Log(v.Debug())
 				}
 
 				_, exists := v.Find(expect.k)
@@ -92,6 +94,8 @@ func testVenom(t *testing.T, v ConfigStore) {
 }
 
 func testDebug(t *testing.T, v ConfigStore) {
+	t.Helper()
+
 	testIO := []struct {
 		tc      string
 		configs ConfigMap
@@ -134,6 +138,8 @@ func testDebug(t *testing.T, v ConfigStore) {
 }
 
 func testAlias(t *testing.T, v ConfigStore) {
+	t.Helper()
+
 	testIO := []struct {
 		tc       string
 		from     string
@@ -173,6 +179,8 @@ func testAlias(t *testing.T, v ConfigStore) {
 }
 
 func testEdgeCases(t *testing.T, v ConfigStore) {
+	t.Helper()
+
 	testIO := []struct {
 		tc       string
 		setup    func(ConfigStore)

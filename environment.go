@@ -17,14 +17,14 @@ var EnvSeparator = "_"
 
 // An EnvironmentVariableResolver is a resolver specifically capable of adding
 // additional context in the form of a prefix to any loaded environment
-// variables
+// variables.
 type EnvironmentVariableResolver struct {
 	Prefix     string
 	Translator KeyTranslator
 }
 
 // Resolve is a Resolver implementation which attempts to load the requested
-// configuration from an environment variable
+// configuration from an environment variable.
 func (r *EnvironmentVariableResolver) Resolve(keys []string, _ ConfigMap) (val interface{}, ok bool) {
 	// copy the keys so we don't negatively impact subsequent lookups
 	keysCopy := make([]string, len(keys))

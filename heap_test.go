@@ -2,7 +2,7 @@ package venom
 
 import (
 	"container/heap"
-	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,7 +36,7 @@ func TestConfigHeap(t *testing.T) {
 	}
 
 	for i, test := range testIO {
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			h := NewConfigLevelHeap()
 			for _, v := range test.inp {
 				heap.Push(h, v)
@@ -45,6 +45,7 @@ func TestConfigHeap(t *testing.T) {
 
 			slc := *test.expected
 			assert.Equal(t, *test.expected, *h)
+
 			for i := len(slc) - 1; i >= 0; i-- {
 				if h.Len() == 0 {
 					break

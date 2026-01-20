@@ -2,14 +2,16 @@ package venom
 
 import (
 	"fmt"
-	"os"
+	"strconv"
 	"strings"
 	"testing"
 )
 
 var readResult interface{}
 
-func benchmarkVenomRead(ven *Venom, key string, b *testing.B) {
+func benchmarkVenomRead(b *testing.B, ven *Venom, key string) {
+	b.Helper()
+
 	var v interface{}
 	for n := 0; n < b.N; n++ {
 		v = ven.Get(key)
@@ -20,23 +22,15 @@ func benchmarkVenomRead(ven *Venom, key string, b *testing.B) {
 type keyer func(i int) string
 type leveler func(i int) ConfigLevel
 
-func benchmarkVenomWrite(ven *Venom, l leveler, key keyer, val interface{}, b *testing.B) {
+func benchmarkVenomWrite(b *testing.B, ven *Venom, l leveler, key keyer, val interface{}) {
+	b.Helper()
+
 	for n := 0; n < b.N; n++ {
 		ven.SetLevel(l(n), key(n), val)
 	}
 }
 
 func BenchmarkVenomGet(b *testing.B) {
-	envVarsToUnset := make([]string, 0)
-
-	defer func() {
-		// clean up any env vars
-		for _, v := range envVarsToUnset {
-			os.Unsetenv(v)
-		}
-		envVarsToUnset = []string{}
-	}()
-
 	testIO := []struct {
 		tc  string
 		ven *Venom
@@ -66,6 +60,7 @@ func BenchmarkVenomGet(b *testing.B) {
 			tc: "many key/value pairs spread across multiple ConfigLevels",
 			ven: func() *Venom {
 				ven := New()
+
 				var key string
 				for i := 0; i < 10000; i++ {
 					key = fmt.Sprintf("test_%d", i)
@@ -73,8 +68,7 @@ func BenchmarkVenomGet(b *testing.B) {
 					case i%int(FileLevel) == 0:
 						ven.SetLevel(FileLevel, key, i)
 					case i%int(EnvironmentLevel) == 0:
-						os.Setenv(strings.ToUpper(key), fmt.Sprintf("%d", i))
-						envVarsToUnset = append(envVarsToUnset, strings.ToUpper(key))
+						b.Setenv(strings.ToUpper(key), strconv.Itoa(i))
 					case i%int(OverrideLevel) == 0:
 						ven.SetOverride(key, i)
 					default:
@@ -89,22 +83,12 @@ func BenchmarkVenomGet(b *testing.B) {
 
 	for _, test := range testIO {
 		b.Run(test.tc, func(b *testing.B) {
-			benchmarkVenomRead(test.ven, test.key, b)
+			benchmarkVenomRead(b, test.ven, test.key)
 		})
 	}
 }
 
 func BenchmarkVenomWrite(b *testing.B) {
-	envVarsToUnset := make([]string, 0)
-
-	defer func() {
-		// clean up any env vars
-		for _, v := range envVarsToUnset {
-			os.Unsetenv(v)
-		}
-		envVarsToUnset = []string{}
-	}()
-
 	testIO := []struct {
 		tc    string
 		ven   *Venom
@@ -141,7 +125,6 @@ func BenchmarkVenomWrite(b *testing.B) {
 				case i%int(FileLevel) == 0:
 					return FileLevel
 				case i%int(EnvironmentLevel) == 0:
-					envVarsToUnset = append(envVarsToUnset, strings.ToUpper(fmt.Sprintf("test_%d", i)))
 					return EnvironmentLevel
 				case i%int(OverrideLevel) == 0:
 					return OverrideLevel
@@ -160,7 +143,6 @@ func BenchmarkVenomWrite(b *testing.B) {
 				case i%int(FileLevel) == 0:
 					return FileLevel
 				case i%int(EnvironmentLevel) == 0:
-					envVarsToUnset = append(envVarsToUnset, strings.ToUpper(fmt.Sprintf("test_%d", i)))
 					return EnvironmentLevel
 				case i%int(OverrideLevel) == 0:
 					return OverrideLevel
@@ -175,7 +157,7 @@ func BenchmarkVenomWrite(b *testing.B) {
 
 	for _, test := range testIO {
 		b.Run(test.tc, func(b *testing.B) {
-			benchmarkVenomWrite(test.ven, test.level, test.key, test.value, b)
+			benchmarkVenomWrite(b, test.ven, test.level, test.key, test.value)
 		})
 	}
 }

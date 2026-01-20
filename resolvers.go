@@ -13,7 +13,7 @@ type Resolver interface {
 type DefaultResolver struct{}
 
 // Resolve will attempt to resolve the specified key using the configuration
-// data stored in the provided ConfigMap
+// data stored in the provided ConfigMap.
 func (r *DefaultResolver) Resolve(keys []string, config ConfigMap) (val interface{}, ok bool) {
 	for _, key := range keys {
 		if val, ok = config[key]; ok {
@@ -27,5 +27,6 @@ func (r *DefaultResolver) Resolve(keys []string, config ConfigMap) (val interfac
 			}
 		}
 	}
+
 	return nil, false
 }

@@ -22,7 +22,8 @@ func ExampleSetOverride() {
 }
 
 func ExampleEnvironmentVariableResolver_Resolve() {
-	os.Setenv("LOG_LEVEL", "INFO")
+	_ = os.Setenv("LOG_LEVEL", "INFO")
+
 	fmt.Println(venom.Get("log.level"))
 	// Output: INFO
 }
@@ -42,6 +43,7 @@ func ExampleFlagsetResolver_Resolve() {
 
 func ExampleSetLevel() {
 	var MySuperImportantLevel = venom.OverrideLevel + 1
+
 	venom.SetLevel(MySuperImportantLevel, "verbose", true)
 	venom.SetOverride("verbose", false)
 	fmt.Println(venom.Get("verbose"))

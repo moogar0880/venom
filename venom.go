@@ -2,11 +2,11 @@ package venom
 
 // Default the default set of available config levels.
 const (
-	DefaultLevel     ConfigLevel = iota
-	FileLevel                    = DefaultLevel + 10
-	EnvironmentLevel             = FileLevel + 10
-	FlagLevel                    = EnvironmentLevel + 10
-	OverrideLevel    ConfigLevel = 99
+	DefaultLevel     = ConfigLevel(0)
+	FileLevel        = ConfigLevel(10)
+	EnvironmentLevel = ConfigLevel(20)
+	FlagLevel        = ConfigLevel(30)
+	OverrideLevel    = ConfigLevel(99)
 )
 
 const defaultDelim = "."
@@ -45,7 +45,7 @@ func (c ConfigMap) merge(d ConfigMap) ConfigMap {
 			if _, ok := c[key]; !ok {
 				existing = make(ConfigMap)
 			} else {
-				existing = c[key].(ConfigMap)
+				existing, _ = c[key].(ConfigMap)
 			}
 
 			c[key] = existing.merge(actual)
@@ -54,23 +54,26 @@ func (c ConfigMap) merge(d ConfigMap) ConfigMap {
 			if _, ok := c[key]; !ok {
 				existing = make(ConfigMap)
 			} else {
-				existing = c[key].(ConfigMap)
+				existing, _ = c[key].(ConfigMap)
 			}
 			c[key] = existing.merge(mapInterfaceInterfaceToStrInterface(actual))
 		default:
 			c[key] = val
 		}
 	}
+
 	return c
 }
 
 func mapInterfaceInterfaceToStrInterface(src map[interface{}]interface{}) map[string]interface{} {
 	data := make(map[string]interface{})
+
 	for key, value := range src {
 		if actualKey, ok := key.(string); ok {
 			data[actualKey] = value
 		}
 	}
+
 	return data
 }
 
@@ -105,6 +108,7 @@ func NewSafe() *Venom {
 // instance that will log to a Logger interface upon reads and writes.
 func NewLoggableWith(l Logger) *Venom {
 	lcs := NewLoggableConfigStoreWith(l)
+
 	return NewWithStore(lcs)
 }
 
@@ -126,6 +130,7 @@ func NewWithStore(s ConfigStore) *Venom {
 func Default() *Venom {
 	ven := New()
 	ven.RegisterResolver(EnvironmentLevel, defaultEnvResolver)
+
 	return ven
 }
 
@@ -134,6 +139,7 @@ func Default() *Venom {
 func DefaultSafe() *Venom {
 	ven := NewSafe()
 	ven.RegisterResolver(EnvironmentLevel, defaultEnvResolver)
+
 	return ven
 }
 
@@ -141,7 +147,7 @@ func DefaultSafe() *Venom {
 // ConfigLevel.
 //
 // Additionally, if the provided level is not already in the current collection
-// of active config levels, it will be added automatically
+// of active config levels, it will be added automatically.
 func (v *Venom) RegisterResolver(level ConfigLevel, r Resolver) {
 	v.Store.RegisterResolver(level, r)
 }
@@ -175,6 +181,7 @@ func (v *Venom) SetOverride(key string, value interface{}) {
 // Get performs a fetch on a given key from the inner config collection.
 func (v *Venom) Get(key string) interface{} {
 	val, _ := v.Store.Find(key)
+
 	return val
 }
 

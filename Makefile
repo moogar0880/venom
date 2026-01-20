@@ -16,6 +16,11 @@ else
 	gofmt -d -l -s *.go > $(LINT_RESULTS)/linter.out
 endif
 
+.PHONY: golangci-lint
+golangci-lint:
+	@golangci-lint fmt
+	@golangci-lint run
+
 .PHONY: test
 test:
 ifeq ($(strip $(TEST_RESULTS)),)

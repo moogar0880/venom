@@ -26,8 +26,9 @@ func TestConfigStoreSetAndFind(t *testing.T) {
 		testVenom(t, DefaultSafe())
 	})
 	t.Run("SubscriptionStore", func(t *testing.T) {
-		store, clear := NewSubscriptionStore(NewDefaultConfigStore())
-		defer clear()
+		store, fn := NewSubscriptionStore(NewDefaultConfigStore())
+		defer fn()
+
 		testVenom(t, store)
 	})
 }
@@ -56,8 +57,9 @@ func TestConfigStoreDebug(t *testing.T) {
 		testDebug(t, DefaultSafe())
 	})
 	t.Run("SubscriptionStore", func(t *testing.T) {
-		store, clear := NewSubscriptionStore(NewDefaultConfigStore())
-		defer clear()
+		store, fn := NewSubscriptionStore(NewDefaultConfigStore())
+		defer fn()
+
 		testDebug(t, store)
 	})
 }
@@ -86,14 +88,14 @@ func TestConfigStoreAlias(t *testing.T) {
 		testAlias(t, DefaultSafe())
 	})
 	t.Run("SubscriptionStore", func(t *testing.T) {
-		store, clear := NewSubscriptionStore(NewDefaultConfigStore())
-		defer clear()
+		store, fn := NewSubscriptionStore(NewDefaultConfigStore())
+		defer fn()
+
 		testAlias(t, store)
 	})
 }
 
 func TestConfigStoreEdgeCases(t *testing.T) {
-	t.Parallel()
 	t.Run("DefaultConfigStore", func(t *testing.T) {
 		testEdgeCases(t, NewDefaultConfigStore())
 	})
@@ -116,8 +118,9 @@ func TestConfigStoreEdgeCases(t *testing.T) {
 		testEdgeCases(t, DefaultSafe())
 	})
 	t.Run("SubscriptionStore", func(t *testing.T) {
-		store, clear := NewSubscriptionStore(NewDefaultConfigStore())
-		defer clear()
+		store, fn := NewSubscriptionStore(NewDefaultConfigStore())
+		defer fn()
+
 		testEdgeCases(t, store)
 	})
 }

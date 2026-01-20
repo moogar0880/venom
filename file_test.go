@@ -2,12 +2,12 @@ package venom
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"syscall"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRegisterExtension(t *testing.T) {
@@ -32,7 +32,7 @@ func TestRegisterExtension(t *testing.T) {
 }
 
 func getJSONFileErr(file string) error {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file) //nolint:gosec
 	if err != nil {
 		return err
 	}
@@ -98,8 +98,9 @@ func TestLoadFile(t *testing.T) {
 			err := v.LoadFile(test.filename)
 
 			assertEqualErrors(t, test.err, err)
-			st := v.Store.(*DefaultConfigStore)
-			assert.EqualValues(t, test.expect, st.config[FileLevel])
+			st, ok := v.Store.(*DefaultConfigStore)
+			require.True(t, ok)
+			assert.Equal(t, test.expect, st.config[FileLevel])
 		})
 	}
 }
@@ -149,8 +150,9 @@ func TestLoadDirectory(t *testing.T) {
 			err := v.LoadDirectory(test.dir, test.recurse)
 
 			assertEqualErrors(t, test.err, err)
-			st := v.Store.(*DefaultConfigStore)
-			assert.EqualValues(t, st.config[FileLevel], test.expect)
+			st, ok := v.Store.(*DefaultConfigStore)
+			require.True(t, ok)
+			assert.Equal(t, test.expect, st.config[FileLevel])
 		})
 	}
 }

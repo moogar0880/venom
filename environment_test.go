@@ -1,7 +1,6 @@
 package venom
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +26,7 @@ func TestEnvironment(t *testing.T) {
 			ok:       true,
 		},
 		{
-			tc:     "should retrieve a prefix environemnt variable",
+			tc:     "should retrieve a prefix environment variable",
 			key:    "timeout",
 			envVar: "MY_SERVICE_TIMEOUT",
 			value:  "10",
@@ -40,7 +39,7 @@ func TestEnvironment(t *testing.T) {
 			ok:     true,
 		},
 		{
-			tc:     "should fail to retrieve non-prefixed environemnt variable",
+			tc:     "should fail to retrieve non-prefixed environment variable",
 			key:    "timeout",
 			envVar: "TIMEOUT",
 			value:  "10",
@@ -60,16 +59,12 @@ func TestEnvironment(t *testing.T) {
 			v.RegisterResolver(EnvironmentLevel, test.resolver)
 
 			// set the test value into the environment
-			os.Setenv(test.envVar, test.value)
+			t.Setenv(test.envVar, test.value)
 
 			// ensure we get the expected value back from the environment
 			actual, ok := v.Find(test.key)
 			assert.Equal(t, test.ok, ok)
 			assert.Equal(t, test.expect, actual)
-
-			// unset our test key from the environment to keep the next test run
-			// clean
-			os.Unsetenv(test.envVar)
 		})
 	}
 }

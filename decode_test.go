@@ -1,13 +1,13 @@
 package venom
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type configStruct struct {
@@ -135,7 +135,7 @@ func TestUnmarshal(t *testing.T) {
 		},
 		{
 			tc: "should use global venom",
-			v: func() *Venom {
+			v: func() *Venom { //nolint:unparam
 				v.Clear()
 				v.SetDefault("delay", 12)
 				v.SetDefault("name", "foobar")
@@ -316,7 +316,7 @@ func TestInvalidUnmarshalError(t *testing.T) {
 			tc:   "should err due to nil config",
 			v:    New(),
 			conf: configStruct{},
-			err:  &InvalidUnmarshalError{reflect.TypeOf(configStruct{})},
+			err:  &InvalidUnmarshalError{reflect.TypeFor[configStruct]()},
 		},
 		{
 			tc: "should err due to nil config",
@@ -326,8 +326,7 @@ func TestInvalidUnmarshalError(t *testing.T) {
 				return c
 			}(),
 			err: func() error {
-				var c *configStruct
-				return &InvalidUnmarshalError{reflect.TypeOf(c)}
+				return &InvalidUnmarshalError{reflect.TypeFor[*configStruct]()}
 			}(),
 		},
 	}
@@ -1322,9 +1321,9 @@ func TestUnmarshal_Hyper(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "tmp_test_data")
-	assert.Nil(t, err)
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
+
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	content := `{
     "dir": "/some/path",
@@ -1338,13 +1337,13 @@ func TestUnmarshal_Hyper(t *testing.T) {
 }`
 
 	tmpfile := filepath.Join(dir, "test.json")
-	err = ioutil.WriteFile(filepath.Join(dir, "test.json"), []byte(content), 0644)
-	assert.Nil(t, err)
+	err := os.WriteFile(filepath.Join(dir, "test.json"), []byte(content), 0600)
+	require.NoError(t, err)
 
 	v := New()
-	assert.Nil(t, v.LoadFile(tmpfile))
+	require.NoError(t, v.LoadFile(tmpfile))
 	err = Unmarshal(v, &inp)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, []int{443}, inp.Ports)
 	assert.Equal(t, "/some/path", inp.Dir)
@@ -1370,11 +1369,11 @@ func TestUnmarshal_KeyWithHyphens(t *testing.T) {
 			}
 		},
 	})
-	_ = os.Setenv("S3_ACCESS_KEY_ID", "FOOBAR")
+	t.Setenv("S3_ACCESS_KEY_ID", "FOOBAR")
 
 	var config Config
 	err := Unmarshal(v, &config)
 
-	assert.Nil(t, err, "unmarshal failed with error: %s", err)
-	assert.Equal(t, config.S3.AccessKeyID, "FOOBAR")
+	require.NoError(t, err, "unmarshal failed with error: %s", err)
+	assert.Equal(t, "FOOBAR", config.S3.AccessKeyID)
 }
